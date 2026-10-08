@@ -1,0 +1,535 @@
+
+
+local Workspace = game:GetService("Workspace")
+local RunService = game:GetService("RunService")
+local Lighting = game:GetService("Lighting")
+local MaterialService = game:GetService("MaterialService")
+local UserInputService = game:GetService("UserInputService")
+local localPlayer = game:GetService("Players").LocalPlayer
+local currentCamera = Workspace.CurrentCamera
+local flag = true
+local tbl = {}
+local tbl2 = {}
+local flag2 = false
+local n = 0
+local vector = Vector3.new(0, -150000, 150000)
+local vector2 = Vector3.zero
+local color = Color3.new(0.60000002384185791, 0.60000002384185791, 0.60000002384185791)
+local color2 = Color3.new(0, 0, 0)
+
+pcall(function()
+	if setfpscap then
+		setfpscap(0)
+	end
+
+	if set_fps_cap then
+		set_fps_cap(0)
+	end
+end)
+
+local qualityLevel = nil
+local meshPartDetailLevel = nil
+
+pcall(function()
+	qualityLevel = settings().Rendering.QualityLevel
+	meshPartDetailLevel = settings().Rendering.MeshPartDetailLevel
+end)
+
+local tbl3 = {
+	gs = Lighting.GlobalShadows,
+	b = Lighting.Brightness,
+	a = Lighting.Ambient,
+	oa = Lighting.OutdoorAmbient,
+	fe = Lighting.FogEnd,
+	fs = Lighting.FogStart,
+	fc = Lighting.FogColor,
+	eds = Lighting.EnvironmentDiffuseScale,
+	ess = Lighting.EnvironmentSpecularScale,
+	ec = Lighting.ExposureCompensation,
+	ct = Lighting.ClockTime,
+	gl = Lighting.GeographicLatitude,
+	csb = Lighting.ColorShift_Bottom,
+	cst = Lighting.ColorShift_Top,
+	tech = Lighting.Technology,
+}
+
+local terrain = Workspace:FindFirstChildOfClass("Terrain")
+local tbl4 = {}
+
+if terrain then
+	pcall(function()
+		tbl4.ws = terrain.WaterWaveSize
+		tbl4.wsp = terrain.WaterWaveSpeed
+		tbl4.wr = terrain.WaterReflectance
+		tbl4.wt = terrain.WaterTransparency
+		tbl4.dec = terrain.Decoration
+	end)
+end
+
+local b = Lighting:FindFirstChild("B")
+local sky
+
+if b then
+	sky = b
+else
+	sky = Instance.new("Sky")
+end
+
+sky.Name = "B"
+sky.SkyboxBk = ""
+sky.SkyboxDn = ""
+sky.SkyboxFt = ""
+sky.SkyboxLf = ""
+sky.SkyboxRt = ""
+sky.SkyboxUp = ""
+sky.SunTextureId = ""
+sky.MoonTextureId = ""
+sky.StarCount = 0
+sky.CelestialBodiesShown = false
+sky.Parent = Lighting
+local tbl5 = { "Thrown", "Effects", "VFX", "Ignore", "Projectiles", "Magic", "Cutscenes" }
+
+local tbl6 = {
+	Thrown = true,
+	Effects = true,
+	VFX = true,
+	Ignore = true,
+	Projectiles = true,
+	Magic = true,
+	Cutscenes = true,
+}
+
+local tbl7 = {
+	Map = true,
+	Built = true,
+	Preload = true,
+	DistanceFade_SurfaceParts = true,
+	Folder = true,
+	FlatGround = true,
+	ArenaLines = true,
+	BorderLines = true,
+}
+
+local tbl8 = {
+	FXUi = true,
+	ImpactFrames = true,
+	Flash = true,
+	Flexworks = true,
+	Impact = true,
+	Impact2 = true,
+	Impact3 = true,
+	BatImpact = true,
+	GuiAnim = true,
+	MobileJunk = true,
+}
+
+local playerGui = localPlayer:FindFirstChild("PlayerGui")
+local humanoid = nil
+
+local function fn(character)
+	humanoid = character:WaitForChild("Humanoid", 3)
+end
+
+if localPlayer.Character then
+	fn(localPlayer.Character)
+end
+
+localPlayer.CharacterAdded:Connect(fn)
+
+local function fn2(arg)
+	while arg and arg ~= Workspace and arg ~= game do
+		local name = arg.Name
+		if name == "MainPart" or name == "Walls" or name == "Baseplate" or name:find("Trash") or name:find("trash") or arg:IsA("SpawnLocation") then
+			return true
+		end
+		arg = arg.Parent
+	end
+
+	return false
+end
+
+local function fn3(arg)
+	local parent = arg.Parent
+
+	while parent and parent ~= Workspace and parent ~= game do
+		if parent:FindFirstChildOfClass("Humanoid") then
+			return true
+		end
+		parent = parent.Parent
+	end
+
+	return false
+end
+
+local function fn4(arg)
+	while arg and arg ~= Workspace and arg ~= game do
+		if tbl7[arg.Name] then
+			return true
+		end
+		arg = arg.Parent
+	end
+
+	return false
+end
+
+local function fn5(descendant)
+	if not flag then
+		return false
+	end
+	local isDecal = descendant:IsA("Decal") or descendant:IsA("Texture") or descendant:IsA("SurfaceAppearance")
+	if isDecal and fn2(descendant) then
+		return false
+	end
+
+	if descendant:IsA("Sky") and descendant.Name == "B" then
+		return false
+	end
+
+	if descendant:IsA("ParticleEmitter") or descendant:IsA("Trail") or descendant:IsA("Smoke") or descendant:IsA("Fire") or descendant:IsA("Sparkles") or descendant:IsA("Beam") or descendant:IsA("Light") or descendant:IsA("Highlight") or descendant:IsA("Explosion") or descendant:IsA("PostProcessEffect") or descendant:IsA("Atmosphere") or descendant:IsA("ColorCorrectionEffect") or descendant:IsA("BlurEffect") or descendant:IsA("BloomEffect") or descendant:IsA("SunRaysEffect") or descendant:IsA("Clouds") or isDecal then
+		pcall(function()
+			descendant.Enabled = false
+			descendant.Parent = nil
+			descendant:Destroy()
+		end)
+
+		return true
+	end
+
+	return false
+end
+
+local function fn6(arg)
+	if arg:IsA("BasePart") and not fn2(arg) and not fn3(arg) then
+		if tbl2[arg] == nil then
+			tbl2[arg] = { cf = arg.CFrame, a = arg.Anchored, c = arg.CanCollide }
+
+			pcall(function()
+				arg.CanCollide = false
+				arg.Anchored = true
+				arg.CFrame = arg.CFrame + vector
+			end)
+		end
+	end
+end
+
+local n2 = 1
+
+local function fn7(descendant)
+	if not flag then
+		return
+	end
+
+	if fn5(descendant) then
+		return
+	end
+
+	if descendant:IsA("BasePart") then
+		if tbl[descendant] == nil then
+			tbl[descendant] = {
+				m = descendant.Material,
+				cs = descendant.CastShadow,
+				r = descendant.Reflectance,
+				tex = descendant:IsA("MeshPart") and descendant.TextureID or nil,
+			}
+		end
+
+		descendant.CastShadow = false
+		descendant.Reflectance = 0
+
+		if not fn2(descendant) then
+			descendant.Material = Enum.Material.SmoothPlastic
+
+			if descendant:IsA("MeshPart") then
+				descendant.TextureID = ""
+			end
+		end
+
+		if not fn3(descendant) and not fn2(descendant) and descendant.Name ~= "Baseplate" then
+			local parent = descendant.Parent
+			local flag3
+
+			while true do
+				local flag4 = parent and parent ~= Workspace and parent ~= game
+				flag3 = false
+
+				if flag4 then
+					if tbl6[parent.Name] then
+						flag3 = true
+						break
+					else
+						parent = parent.Parent
+						continue
+					end
+				end
+
+				break
+			end
+
+			if flag3 then
+				pcall(function()
+					descendant:Destroy()
+				end)
+			elseif fn4(descendant) then
+				fn6(descendant)
+			end
+		end
+	end
+end
+
+local function fn8()
+	Lighting.GlobalShadows = false
+	Lighting.Brightness = 0
+	Lighting.Ambient = color
+	Lighting.OutdoorAmbient = color
+	Lighting.FogEnd = 9e9
+	Lighting.EnvironmentDiffuseScale = 0
+	Lighting.EnvironmentSpecularScale = 0
+	Lighting.ExposureCompensation = 0
+	Lighting.ClockTime = 12
+	Lighting.GeographicLatitude = 0
+	Lighting.ColorShift_Bottom = color2
+	Lighting.ColorShift_Top = color2
+end
+
+local function fn9()
+	local n3 = 294689366
+
+	pcall(function()
+		MaterialService.Use2022Materials = false
+		local level01 = Enum.QualityLevel.Level01
+		settings().Rendering.QualityLevel = level01
+		local level012 = Enum.MeshPartDetailLevel.Level01
+		settings().Rendering.MeshPartDetailLevel = level012
+		Lighting.Technology = Enum.Technology.Compatibility
+		fn8()
+	end)
+
+	if terrain then
+		pcall(function()
+			terrain.WaterWaveSize = 0
+			terrain.WaterWaveSpeed = 0
+			terrain.WaterReflectance = 0
+			terrain.WaterTransparency = 1
+			terrain.Decoration = false
+		end)
+	end
+
+	if playerGui then
+		local children = playerGui:GetChildren()
+
+		for i = 1, #children do
+			local v = children[i]
+
+			if tbl8[v.Name] then
+				pcall(function()
+					v.Enabled = false
+				end)
+			end
+		end
+	end
+
+	local descendants = Workspace:GetDescendants()
+
+	for i = 1, #descendants do
+		local v = descendants[i]
+
+		if v:IsA("BasePart") then
+			if not fn2(v) and not fn3(v) and fn4(v) then
+				fn6(v)
+			end
+
+			if tbl[v] == nil then
+				tbl[v] = {
+					m = v.Material,
+					cs = v.CastShadow,
+					r = v.Reflectance,
+					tex = v:IsA("MeshPart") and v.TextureID or nil,
+				}
+			end
+
+			v.CastShadow = false
+			v.Reflectance = 0
+
+			if not fn2(v) then
+				v.Material = Enum.Material.SmoothPlastic
+
+				if v:IsA("MeshPart") then
+					v.TextureID = ""
+				end
+			end
+		else
+			fn5(v)
+		end
+	end
+
+	local children = Lighting:GetChildren()
+
+	for i = 1, #children do
+		fn5(children[i])
+	end
+
+	local children2 = currentCamera:GetChildren()
+
+	for i = 1, #children2 do
+		fn5(children2[i])
+	end
+end
+
+fn9()
+Workspace.DescendantAdded:Connect(fn7)
+Lighting.DescendantAdded:Connect(fn5)
+currentCamera.DescendantAdded:Connect(fn5)
+
+RunService.RenderStepped:Connect(function()
+	if not flag then
+		return
+	end
+
+	if humanoid then
+		humanoid.CameraOffset = vector2
+	end
+
+	if Lighting.Brightness ~= 0 or Lighting.GlobalShadows ~= false then
+		fn8()
+	end
+
+	for i = 1, #tbl5 do
+		local v = Workspace:FindFirstChild(tbl5[i])
+
+		if v then
+			local children = v:GetChildren()
+
+			for i2 = 1, #children do
+				local v2 = children[i2]
+
+				if not fn2(v2) then
+					pcall(function()
+						v2:Destroy()
+					end)
+				end
+			end
+		end
+	end
+end)
+
+local function fn10()
+	flag = true
+	sky.Parent = Lighting
+	fn9()
+end
+
+local function fn11()
+	flag = false
+	sky.Parent = nil
+
+	if playerGui then
+		local children = playerGui:GetChildren()
+
+		for i = 1, #children do
+			local v = children[i]
+
+			if tbl8[v.Name] then
+				pcall(function()
+					v.Enabled = true
+				end)
+			end
+		end
+	end
+
+	pcall(function()
+		Lighting.GlobalShadows = tbl3.gs
+		Lighting.Brightness = tbl3.b
+		Lighting.Ambient = tbl3.a
+		Lighting.OutdoorAmbient = tbl3.oa
+		Lighting.FogEnd = tbl3.fe
+		Lighting.FogStart = tbl3.fs
+		Lighting.FogColor = tbl3.fc
+		Lighting.EnvironmentDiffuseScale = tbl3.eds
+		Lighting.EnvironmentSpecularScale = tbl3.ess
+		Lighting.ExposureCompensation = tbl3.ec
+		Lighting.ClockTime = tbl3.ct
+		Lighting.GeographicLatitude = tbl3.gl
+		Lighting.ColorShift_Bottom = tbl3.csb
+		Lighting.ColorShift_Top = tbl3.cst
+		Lighting.Technology = tbl3.tech
+
+		if qualityLevel then
+			settings().Rendering.QualityLevel = qualityLevel
+		end
+
+		if meshPartDetailLevel then
+			settings().Rendering.MeshPartDetailLevel = meshPartDetailLevel
+		end
+	end)
+
+	if terrain and tbl4.ws ~= nil then
+		local n3 = 181911749
+
+		pcall(function()
+			terrain.WaterWaveSize = tbl4.ws
+			terrain.WaterWaveSpeed = tbl4.wsp
+			terrain.WaterReflectance = tbl4.wr
+			terrain.WaterTransparency = tbl4.wt
+			terrain.Decoration = tbl4.dec
+		end)
+	end
+
+	for k, v in pairs(tbl2) do
+		if k and k.Parent then
+			pcall(function()
+				k.CFrame = v.cf
+				k.Anchored = v.a
+				k.CanCollide = v.c
+			end)
+		end
+	end
+
+	table.clear(tbl2)
+
+	for k, v in pairs(tbl) do
+		if k and k.Parent then
+			pcall(function()
+				k.Material = v.m
+				k.CastShadow = v.cs
+				k.Reflectance = v.r
+
+				if v.tex and k:IsA("MeshPart") then
+					k.TextureID = v.tex
+				end
+			end)
+		end
+	end
+
+	table.clear(tbl)
+end
+
+local function fn12()
+	local now = tick()
+	if now - n < 0.5 or flag2 then
+		return
+	end
+	n = now
+	flag2 = true
+
+	task.spawn(function()
+		if flag then
+			pcall(fn11)
+		else
+			pcall(fn10)
+		end
+
+		flag2 = false
+	end)
+end
+
+UserInputService.InputBegan:Connect(function(input)
+	pcall(function()
+		if UserInputService:GetFocusedTextBox() then
+			return
+		end
+
+		if input.KeyCode == Enum.KeyCode.L then
+			fn12()
+		end
+	end)
+end)
