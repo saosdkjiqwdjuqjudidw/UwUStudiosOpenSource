@@ -1,4 +1,6 @@
-
+-- Deobfuscated by ollieeee0737 on dc
+-- Detected obfuscation: Luraph v15.1
+-- Local names are inferred from use (the original names are not in the bytecode)
 
 local Workspace = game:GetService("Workspace")
 local RunService = game:GetService("RunService")
