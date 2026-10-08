@@ -1,0 +1,8474 @@
+
+-- the guard autofarm was stripped from this script because its copy pasted from hsx
+
+local fn
+
+fn = function(arg)
+	local HttpService = game:GetService("HttpService")
+	local ok, result
+
+	ok, result = pcall(function()
+		return HttpService:GenerateGUID(false)
+	end)
+
+	if ok and result then
+		return result
+	end
+	arg = arg or 32
+	local str = ""
+
+	for i = 1, arg do
+		local n = math.random(1, 16)
+		str ..= string.sub("abcdef0123456789", n, n)
+	end
+
+	return str
+end
+
+local tbl
+tbl = {}
+local tbl2
+tbl2 = {}
+local tbl3
+tbl3 = { lastTPTime = 0, lastRopeTPTime = 0, lastGlassTPTime = 0, lastPeabertTP = 0, lastRelaxTime = 0 }
+local tbl4
+tbl4 = { Enabled = false, Speed = 32, Connection = nil, BodyVelocity = nil }
+local fn2
+
+fn2 = function()
+	return tbl4 and tbl4.Enabled
+end
+
+local CoreGui
+local hui = gethui and gethui() or game:GetService("CoreGui"):FindFirstChild("RobloxGui")
+
+if hui then
+	CoreGui = hui
+else
+	CoreGui = game:GetService("CoreGui")
+end
+
+local tbl5
+tbl5 = { Cache = {} }
+local Players
+Players = game:GetService("Players")
+local ReplicatedStorage
+ReplicatedStorage = game:GetService("ReplicatedStorage")
+local RunService
+RunService = game:GetService("RunService")
+local Workspace
+Workspace = game:GetService("Workspace")
+local TweenService
+TweenService = game:GetService("TweenService")
+local UserInputService
+UserInputService = game:GetService("UserInputService")
+game:GetService("Debris")
+local localPlayer
+localPlayer = Players.LocalPlayer
+
+local function getWrapper(arg)
+	if tbl5.Cache[arg] then
+		return tbl5.Cache[arg]
+	end
+	local flag = typeof(filtergc) == "function"
+
+	if flag then
+		flag = typeof(debug.getupvalue) == "function"
+	end
+
+	if flag then
+		local ok, result
+
+		ok, result = pcall(function()
+			return filtergc("table", {}, false)
+		end)
+
+		if ok then
+			ok = type(result) == "table"
+		end
+
+		if ok then
+			for _, v in ipairs(result) do
+				if typeof(v) ~= "table" then
+					continue
+				end
+				local ok2, result2 = pcall(rawget, v, "FireServer")
+
+				if ok2 then
+					ok2 = typeof(result2) == "function"
+				end
+
+				if ok2 and islclosure(result2) then
+					for i = 1, 40 do
+						local ok3, result3 = pcall(debug.getupvalue, result2, i)
+						local flag2
+
+						if ok3 then
+							flag2 = typeof(result3) == "Instance"
+						else
+							flag2 = ok3
+						end
+
+						if flag2 and result3:IsA("RemoteEvent") and result3.Name == arg then
+							tbl5.Cache[arg] = v
+							return v
+						end
+					end
+				end
+			end
+		end
+	end
+
+	local flag2 = typeof(getgc) == "function"
+
+	if flag2 then
+		flag2 = typeof(debug.getupvalue) == "function"
+	end
+
+	if flag2 then
+		local ok, result = pcall(getgc, true)
+
+		if ok then
+			ok = type(result) == "table"
+		end
+
+		if ok then
+			for _, v in ipairs(result) do
+				if typeof(v) ~= "table" then
+					continue
+				end
+				local ok2, result2 = pcall(rawget, v, "FireServer")
+
+				if ok2 then
+					ok2 = typeof(result2) == "function"
+				end
+
+				if ok2 and islclosure(result2) then
+					for i = 1, 40 do
+						local ok3, result3 = pcall(debug.getupvalue, result2, i)
+
+						if ok3 then
+							ok3 = typeof(result3) == "Instance"
+						end
+
+						if ok3 and result3:IsA("RemoteEvent") and result3.Name == arg then
+							tbl5.Cache[arg] = v
+							return v
+						end
+					end
+				end
+			end
+		end
+	end
+
+	return nil
+end
+
+tbl5.GetWrapper = getWrapper
+
+tbl5.Fire = function(arg, ...)
+	local v = tbl5.GetWrapper(arg)
+	local flag
+
+	if v then
+		flag = typeof(v.FireServer) == "function"
+	else
+		flag = v
+	end
+
+	if flag then
+		return select(1, pcall(v.FireServer, v, ...))
+	end
+	local v2 = ReplicatedStorage:FindFirstChild(arg, true)
+	if v2 and v2:IsA("RemoteEvent") then
+		return select(1, pcall(v2.FireServer, v2, ...))
+	end
+	return false
+end
+
+tbl5.UseTool = function(arg, arg2, arg3)
+	if not arg then
+		return false
+	end
+	return tbl5.Fire("UsedTool", arg2 or "UsingMoveCustom", arg, nil, arg3 or { Clicked = true })
+end
+
+local fn3
+
+fn3 = function(arg)
+	local character = localPlayer.Character
+	if not character then
+		return
+	end
+	local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
+	local humanoid = character:FindFirstChildOfClass("Humanoid")
+	if not humanoidRootPart then
+		return
+	end
+
+	pcall(function()
+		if humanoid then
+			humanoid:ChangeState(Enum.HumanoidStateType.Physics)
+		end
+
+		humanoidRootPart.AssemblyLinearVelocity = Vector3.zero
+		humanoidRootPart.AssemblyAngularVelocity = Vector3.zero
+		humanoidRootPart.Velocity = Vector3.zero
+		humanoidRootPart.RotVelocity = Vector3.zero
+		humanoidRootPart.CanCollide = false
+		humanoidRootPart.Anchored = true
+	end)
+
+	RunService.Heartbeat:Wait()
+
+	pcall(function()
+		character:PivotTo(arg)
+	end)
+
+	RunService.Heartbeat:Wait()
+
+	pcall(function()
+		humanoidRootPart.AssemblyLinearVelocity = Vector3.zero
+		humanoidRootPart.AssemblyAngularVelocity = Vector3.zero
+		humanoidRootPart.Velocity = Vector3.zero
+		humanoidRootPart.RotVelocity = Vector3.zero
+		humanoidRootPart.Anchored = false
+
+		if humanoid then
+			humanoid:ChangeState(Enum.HumanoidStateType.Running)
+		end
+	end)
+end
+
+local fn4, lib, fn5, fn6, fn7, fn8, fn9, v, tbl6, handlers
+local v2
+
+do
+	local tbl7 = {
+		w = 87,
+		a = 65,
+		s = 83,
+		d = 68,
+		space = 32,
+		e = 69,
+		q = 81,
+		f = 70,
+		r = 82,
+		t = 84,
+		y = 89,
+		x = 88,
+		c = 67,
+		v = 86,
+		b = 66,
+		g = 71,
+		h = 72,
+		z = 90,
+		["1"] = 49,
+		["2"] = 50,
+		["3"] = 51,
+		["4"] = 52,
+		["5"] = 53,
+		["6"] = 54,
+		["7"] = 55,
+		["8"] = 56,
+		["9"] = 57,
+		["0"] = 48,
+	}
+
+	local function fn10(arg)
+		local flag = type(keypress) == "function"
+		local flag2
+
+		if flag then
+			flag2 = type(keyrelease) == "function"
+		else
+			flag2 = flag
+		end
+
+		if flag2 then
+			local v3 = tbl7[string.lower(tostring(arg))]
+
+			if v3 then
+				keypress(v3)
+				task.wait(math.random(35, 65) / 1000)
+				keyrelease(v3)
+				return true
+			end
+		end
+
+		return false
+	end
+
+	local value = nil
+	local n = 0
+
+	local function fn11()
+		if tick() - n < 0.5 then
+			return value
+		end
+		n = tick()
+		local values = Workspace:FindFirstChild("Values")
+		values = values and values:FindFirstChild("CurrentGame")
+
+		if values and values.Value ~= "" then
+			value = values.Value
+		else
+			value = nil
+		end
+
+		return value
+	end
+
+	fn4 = function(arg)
+		return fn11() == arg
+	end
+
+	lib = loadstring(game:HttpGet("https://pastefy.app/NwgGPYFO/raw"))()
+	lib:SetNotificationLower(true)
+
+	local function fn12(arg, arg2)
+		local flag = typeof(getcustomasset) == "function" and getcustomasset
+		local flag2
+
+		if flag then
+			flag2 = flag
+		else
+			flag2 = typeof(getsynasset) == "function" and getsynasset
+		end
+
+		if not flag2 then
+			return nil
+		end
+
+		if typeof(isfolder) == "function" and not isfolder("UwUHub_Assets") then
+			if typeof(makefolder) == "function" then
+				pcall(makefolder, "UwUHub_Assets")
+			end
+		end
+
+		local str = "UwUHub_Assets" .. "/" .. arg2
+
+		if typeof(isfile) == "function" and not isfile(str) then
+			local ok, result = pcall(function()
+				return game:HttpGet(arg)
+			end)
+
+			ok = ok and result
+
+			if ok then
+				ok = typeof(writefile) == "function"
+			end
+
+			if ok then
+				pcall(writefile, str, result)
+			end
+		else
+			local flag3 = typeof(isfile) ~= "function"
+
+			if flag3 then
+				flag3 = typeof(writefile) == "function"
+			end
+
+			if flag3 then
+				local ok, result
+
+				ok, result = pcall(function()
+					return game:HttpGet(arg)
+				end)
+
+				if ok and result then
+					pcall(writefile, str, result)
+				end
+			end
+		end
+
+		local v3 = nil
+
+		pcall(function()
+			v3 = flag2(str)
+		end)
+
+		return v3
+	end
+
+	local tbl8 = {}
+
+	local function fn13(arg, arg2, volume)
+		task.spawn(function()
+			pcall(function()
+				local v3 = tbl8[arg2]
+
+				if not v3 then
+					v3 = fn12(arg, arg2)
+
+					if v3 then
+						tbl8[arg2] = v3
+					end
+				end
+
+				if v3 then
+					local sound = Instance.new("Sound")
+					sound.Name = fn(8)
+					sound.SoundId = v3
+					sound.Volume = volume or 4
+					sound.RollOffMode = Enum.RollOffMode.Linear
+					sound.Parent = workspace.CurrentCamera or game:GetService("SoundService")
+					sound:Play()
+
+					sound.Ended:Connect(function()
+						sound:Destroy()
+					end)
+
+					task.delay(6, function()
+						if sound and sound.Parent then
+							sound:Destroy()
+						end
+					end)
+				end
+			end)
+		end)
+	end
+
+	task.spawn(function()
+		pcall(function()
+			tbl8["starternotify.mp3"] = fn12("https://github.com/platinww/UwU/raw/refs/heads/main/UI/starternotify.mp3", "starternotify.mp3")
+			tbl8["notify.mp3"] = fn12("https://github.com/platinww/UwU/raw/refs/heads/main/UI/notify.mp3", "notify.mp3")
+		end)
+	end)
+
+	fn5 = function(arg, arg2, arg3)
+		local str
+
+		if arg2 ~= nil then
+			str = tostring(arg2)
+		else
+			str = ""
+
+			if arg ~= nil then
+				str = tostring(arg)
+			end
+		end
+
+		if arg3 then
+			fn13("https://github.com/platinww/UwU/raw/refs/heads/main/UI/starternotify.mp3", "starternotify.mp3", 4)
+		else
+			fn13("https://github.com/platinww/UwU/raw/refs/heads/main/UI/notify.mp3", "notify.mp3", 4)
+		end
+
+		lib:Notify({ Title = "UwU Hub", Content = str, Duration = 4 })
+	end
+
+	local HBGQTE = nil
+
+	fn6 = function()
+		if not HBGQTE then
+			pcall(function()
+				local modules = ReplicatedStorage:WaitForChild("Modules", 5)
+
+				if modules then
+					HBGQTE = require(modules:WaitForChild("HBGQTE", 5))
+				end
+			end)
+		end
+
+		return HBGQTE
+	end
+
+	local guid = nil
+
+	task.spawn(function()
+		pcall(function()
+			local modules = ReplicatedStorage:WaitForChild("Modules", 5)
+
+			if modules then
+				local games = modules:WaitForChild("Games", 5)
+
+				if games then
+					local PentathlonClient = require(games:WaitForChild("PentathlonClient", 5))
+					local flag
+
+					if PentathlonClient then
+						flag = type(PentathlonClient) == "table"
+					else
+						flag = PentathlonClient
+					end
+
+					if flag then
+						local runServerGame = PentathlonClient.RunServerGame
+
+						if runServerGame then
+							PentathlonClient.RunServerGame = function(arg, arg2, ...)
+								if arg and arg.GUID then
+									guid = arg.GUID
+								end
+
+								local v3 = table.pack(...)
+								local v4 = runServerGame
+								v3.n = 3 + v3.n - 1
+								table.move(v3, 1, v3.n, 3, v3)
+								v3[1] = arg
+								v3[2] = arg2
+								return v4(table.unpack(v3, 1, v3.n))
+							end
+						end
+
+						local addActiveGame = PentathlonClient.AddActiveGame
+
+						if addActiveGame then
+							local n2 = 58969446
+
+							PentathlonClient.AddActiveGame = function(arg)
+								if arg and arg.GUID then
+									guid = arg.GUID
+								end
+
+								return addActiveGame(arg)
+							end
+						end
+					end
+				end
+			end
+		end)
+	end)
+
+	local function fn14(arg, arg2)
+		if not guid then
+			return false
+		end
+		local pentathlonRemote = ReplicatedStorage:FindFirstChild("Remotes") and ReplicatedStorage.Remotes:FindFirstChild("PentathlonRemote")
+
+		if pentathlonRemote then
+			if arg2 then
+				pentathlonRemote:FireServer(guid, arg, arg2)
+			else
+				pentathlonRemote:FireServer(guid, arg)
+			end
+
+			return true
+		end
+
+		return false
+	end
+
+	local n2 = 0
+	local tbl9 = {}
+
+	fn7 = function()
+		pcall(function()
+			local fn15 = clonefunction
+
+			if not fn15 then
+				fn15 = function(arg)
+					return arg
+				end
+			end
+
+			local fn16 = newcclosure
+
+			if not fn16 then
+				fn16 = function(arg)
+					return arg
+				end
+			end
+
+			local v3 = hookfunction or replaceclosure
+			local firedGunClient = ReplicatedStorage:FindFirstChild("Remotes") and ReplicatedStorage.Remotes:FindFirstChild("FiredGunClient")
+			local flag
+
+			if firedGunClient then
+				flag = typeof(getconnections) == "function"
+			else
+				flag = firedGunClient
+			end
+
+			if flag then
+				flag = typeof(v3) == "function"
+			end
+
+			if flag then
+				for _, v4 in ipairs(getconnections(firedGunClient.OnClientEvent)) do
+					local function_ = v4.Function
+
+					if typeof(function_) == "function" and not tbl9[function_] then
+						tbl9[function_] = true
+						local v5 = fn15(function_)
+
+						local v6 = fn16(function(arg, arg2, arg3, ...)
+							if (tbl.infiniteAmmoGuardEnabled or tbl.autoKillRedArrowEnabled) and tostring(arg) == "SyncAmmo" then
+								return
+							end
+							local v6 = table.pack(...)
+							local v7 = v5
+							v6.n = 4 + v6.n - 1
+							table.move(v6, 1, v6.n, 4, v6)
+							v6[1] = arg
+							v6[2] = arg2
+							v6[3] = arg3
+							return v7(table.unpack(v6, 1, v6.n))
+						end)
+
+						v3(function_, v6)
+					end
+				end
+			end
+
+			if typeof(firesignal) == "function" and not tbl9.firesignal then
+				tbl9.firesignal = true
+				local v4 = fn15(firesignal)
+
+				v3(firesignal, fn16(function(arg, ...)
+					local v5 = table.pack(...)
+					if (tbl.infiniteAmmoGuardEnabled or tbl.autoKillRedArrowEnabled) and tostring(({ ... })[1]) == "SyncAmmo" then
+						return
+					end
+					return v4(arg, table.unpack(v5, 1, v5.n))
+				end))
+			end
+		end)
+	end
+
+	fn8 = function()
+		local character = localPlayer.Character
+		if not character then
+			return nil
+		end
+
+		local tbl10 = {
+			G3SG1 = true,
+			["Glock 17"] = true,
+			["Five Seven"] = true,
+			["Colt M1911"] = true,
+			Uzi = true,
+			MP5K = true,
+			["Thompson M1A1"] = true,
+			["Colt Python 6"] = true,
+			M4A1 = true,
+			["FN Fal"] = true,
+			HK416 = true,
+			Deagle = true,
+			P90 = true,
+			MP5 = true,
+		}
+
+		for _, child in ipairs(character:GetChildren()) do
+			if tbl10[child.Name] or child:IsA("Tool") then
+				return child
+			end
+		end
+
+		local backpack = localPlayer:FindFirstChild("Backpack")
+
+		if backpack then
+			for _, child in ipairs(backpack:GetChildren()) do
+				if tbl10[child.Name] or child:IsA("Tool") then
+					return child
+				end
+			end
+		end
+
+		return nil
+	end
+
+	fn9 = function(arg)
+		if not arg then
+			return
+		end
+
+		pcall(function()
+			local infoClient = arg:FindFirstChild("InfoClient") or arg:FindFirstChild("Info")
+
+			if infoClient then
+				local bullets = infoClient:FindFirstChild("Bullets")
+				local maxBullets = arg:FindFirstChild("MaxBullets") or arg:FindFirstChild("MagSize")
+				local value2 = maxBullets and maxBullets.Value or 30
+
+				if bullets and bullets.Value <= 5 then
+					local now = tick()
+
+					if now - n2 >= 0.2 then
+						n2 = now
+						local remotes = ReplicatedStorage:FindFirstChild("Remotes")
+						remotes = remotes and remotes:FindFirstChild("FiredGunClient")
+
+						if remotes then
+							remotes:FireServer(arg, { ReloadingGun = true })
+						end
+					end
+
+					bullets.Value = value2
+				end
+			end
+		end)
+	end
+
+	lib:AddTheme({
+		Name = "White-Black",
+		Background = Color3.fromHex("#111111"),
+		Outline = Color3.fromHex("#ffffff"),
+		Text = Color3.fromHex("#ffffff"),
+		Placeholder = Color3.fromHex("#aaaaaa"),
+		Button = Color3.fromHex("#333333"),
+		Icon = Color3.fromHex("#ffffff"),
+		Toggle = Color3.fromRGB(17, 160, 4),
+		ToggleActive = Color3.fromRGB(17, 160, 4),
+		Accent = Color3.fromRGB(17, 160, 4),
+	})
+
+	lib:SetTheme("White-Black")
+
+	v = lib:CreateWindow({
+		Title = "https://github.com/stormzdev/image-archive/blob/main/uwu-text.png?raw=true",
+		Folder = fn(8),
+		Size = UDim2.new(0, 580, 0, 460),
+		MinSize = Vector2.new(560, 350),
+		MaxSize = Vector2.new(850, 560),
+		Transparent = false,
+		Theme = "White-Black",
+		Resizable = true,
+		SideBarWidth = 200,
+		Background = "rbxassetid://84559674409718",
+		BackgroundImageTransparency = 0.95,
+		HideSearchBar = true,
+		ScrollBarEnabled = true,
+		User = {
+			Enabled = true,
+			Callback = function()
+			end,
+			Anonymous = false,
+		},
+	})
+
+	v:Tag({
+		Image = "https://github.com/stormzdev/image-archive/blob/main/cts.png?raw=true",
+		Width = 65,
+		Height = 22,
+	})
+
+	v:SetToggleKey(Enum.KeyCode.Minus)
+	local color = Color3.fromHex
+
+	v:EditOpenButton({
+		Title = "https://github.com/stormzdev/image-archive/blob/main/uwu-text.png?raw=true",
+		CornerRadius = UDim.new(0, 16),
+		StrokeThickness = 2,
+		Color = ColorSequence.new(Color3.fromHex("ffffff"), color("ffffff")),
+		OnlyMobile = false,
+		Enabled = true,
+		Draggable = true,
+	})
+
+	tbl6 = {}
+	handlers = {}
+	local obj = setmetatable({}, { __mode = "k" })
+	local fn15 = nil
+
+	fn15 = function(arg)
+		local flag = not arg
+
+		if not flag then
+			flag = type(arg) ~= "table"
+		end
+
+		if flag or obj[arg] then
+			return arg
+		end
+		obj[arg] = true
+		local toggle = arg.Toggle
+
+		if toggle then
+			arg.Toggle = function(arg2, arg3, ...)
+				if type(arg3) == "table" then
+					local title = arg3.Flag or arg3.Title
+					local callback = arg3.Callback
+
+					if title then
+						if arg3.Default ~= nil and tbl[title] == nil then
+							tbl[title] = arg3.Default
+						end
+
+						arg3.Callback = function(arg4, ...)
+							tbl[title] = arg4
+
+							if callback then
+								local v3 = pcall
+								local v4 = table.pack(...)
+								local v5 = callback
+								v4.n = 3 + v4.n - 1
+								table.move(v4, 1, v4.n, 3, v4)
+								v4[1] = v5
+								v4[2] = arg4
+								v3(table.unpack(v4, 1, v4.n))
+							end
+						end
+					end
+
+					local v3 = toggle(arg2, arg3, ...)
+
+					if title and v3 then
+						tbl6[title] = v3
+
+						if arg3.Callback then
+							handlers[title] = arg3.Callback
+						end
+					end
+
+					return v3
+				end
+
+				return toggle(arg2, arg3, ...)
+			end
+		end
+
+		local slider = arg.Slider
+
+		if slider then
+			arg.Slider = function(arg2, arg3, ...)
+				if type(arg3) == "table" then
+					local title = arg3.Flag or arg3.Title
+					local callback = arg3.Callback
+
+					if title then
+						if arg3.Default ~= nil and tbl[title] == nil then
+							local default = type(arg3.Default) == "table" and (arg3.Default.Value or arg3.Default.Default) or tonumber(arg3.Default)
+
+							if default then
+								tbl[title] = default
+							end
+						end
+
+						arg3.Callback = function(arg4, ...)
+							local default = type(arg4) == "table" and (arg4.Value or arg4.Default) or tonumber(arg4)
+
+							if default then
+								tbl[title] = default
+							end
+
+							if callback then
+								local v3 = pcall
+								local v4 = table.pack(...)
+								local v5 = callback
+								v4.n = 3 + v4.n - 1
+								table.move(v4, 1, v4.n, 3, v4)
+								v4[1] = v5
+								v4[2] = arg4
+								v3(table.unpack(v4, 1, v4.n))
+							end
+						end
+					end
+
+					local v3 = slider(arg2, arg3, ...)
+
+					if title and v3 then
+						tbl6[title] = v3
+
+						if arg3.Callback then
+							handlers[title] = arg3.Callback
+						end
+					end
+
+					return v3
+				end
+
+				return slider(arg2, arg3, ...)
+			end
+		end
+
+		local dropdown = arg.Dropdown
+
+		if dropdown then
+			arg.Dropdown = function(arg2, arg3, ...)
+				if type(arg3) == "table" then
+					local title = arg3.Flag or arg3.Title
+					local callback = arg3.Callback
+
+					if title then
+						if arg3.Default ~= nil and tbl[title] == nil then
+							tbl[title] = arg3.Default
+						end
+
+						arg3.Callback = function(arg4, ...)
+							tbl[title] = arg4
+
+							if callback then
+								local v3 = pcall
+								local v4 = table.pack(...)
+								local v5 = callback
+								v4.n = 3 + v4.n - 1
+								table.move(v4, 1, v4.n, 3, v4)
+								v4[1] = v5
+								v4[2] = arg4
+								v3(table.unpack(v4, 1, v4.n))
+							end
+						end
+					end
+
+					local v3 = dropdown(arg2, arg3, ...)
+
+					if title and v3 then
+						tbl6[title] = v3
+
+						if arg3.Callback then
+							handlers[title] = arg3.Callback
+						end
+					end
+
+					return v3
+				end
+
+				return dropdown(arg2, arg3, ...)
+			end
+		end
+
+		local keybind = arg.Keybind
+
+		if keybind then
+			arg.Keybind = function(arg2, arg3, ...)
+				if type(arg3) == "table" then
+					local title = arg3.Flag or arg3.Title
+					local callback = arg3.Callback
+
+					if title then
+						if arg3.Default ~= nil and tbl[title] == nil then
+							tbl[title] = arg3.Default
+						end
+
+						arg3.Callback = function(arg4, ...)
+							tbl[title] = arg4
+
+							if callback then
+								local v3 = pcall
+								local v4 = table.pack(...)
+								local v5 = callback
+								v4.n = 3 + v4.n - 1
+								table.move(v4, 1, v4.n, 3, v4)
+								v4[1] = v5
+								v4[2] = arg4
+								v3(table.unpack(v4, 1, v4.n))
+							end
+						end
+					end
+
+					local v3 = keybind(arg2, arg3, ...)
+
+					if title and v3 then
+						tbl6[title] = v3
+
+						if arg3.Callback then
+							handlers[title] = arg3.Callback
+						end
+					end
+
+					return v3
+				end
+
+				return keybind(arg2, arg3, ...)
+			end
+		end
+
+		local colorpicker = arg.Colorpicker
+
+		if colorpicker then
+			arg.Colorpicker = function(arg2, arg3, ...)
+				if type(arg3) == "table" then
+					local title = arg3.Flag or arg3.Title
+					local callback = arg3.Callback
+
+					if title then
+						if arg3.Default ~= nil and tbl[title] == nil then
+							tbl[title] = arg3.Default
+						end
+
+						arg3.Callback = function(arg4, ...)
+							tbl[title] = arg4
+
+							if callback then
+								local v3 = pcall
+								local v4 = table.pack(...)
+								local v5 = callback
+								v4.n = 3 + v4.n - 1
+								table.move(v4, 1, v4.n, 3, v4)
+								v4[1] = v5
+								v4[2] = arg4
+								v3(table.unpack(v4, 1, v4.n))
+							end
+						end
+					end
+
+					local v3 = colorpicker(arg2, arg3, ...)
+
+					if title and v3 then
+						tbl6[title] = v3
+
+						if arg3.Callback then
+							handlers[title] = arg3.Callback
+						end
+					end
+
+					return v3
+				end
+
+				return colorpicker(arg2, arg3, ...)
+			end
+		end
+
+		local section = arg.Section
+
+		if section then
+			arg.Section = function(arg2, arg3, ...)
+				local v3 = table.pack(...)
+				local v4 = section
+				v3.n = 3 + v3.n - 1
+				table.move(v3, 1, v3.n, 3, v3)
+				v3[1] = arg2
+				v3[2] = arg3
+				local v5 = v4(table.unpack(v3, 1, v3.n))
+				return fn15(v5)
+			end
+		end
+
+		local multiSection = arg.MultiSection
+
+		if multiSection then
+			arg.MultiSection = function(arg2, arg3, ...)
+				local v3 = multiSection(arg2, arg3, ...)
+
+				if type(v3) == "table" then
+					for _, v4 in pairs(v3) do
+						if type(v4) == "table" then
+							fn15(v4)
+						end
+					end
+				end
+
+				return v3
+			end
+		end
+
+		return arg
+	end
+
+	local tab = v.Tab
+
+	local function tab2(arg, arg2, ...)
+		local v3 = table.pack(...)
+		local v4 = tab
+		v3.n = 3 + v3.n - 1
+		table.move(v3, 1, v3.n, 3, v3)
+		v3[1] = arg
+		v3[2] = arg2
+		local v5 = v4(table.unpack(v3, 1, v3.n))
+		return fn15(v5)
+	end
+
+	v.Tab = tab2
+
+	v2 = v:Tab({ Title = "Games", Icon = "layout-grid" }):MultiSection({
+		Sections = {
+			{
+				"RLGL",
+				"https://github.com/stormzdev/image-archive/blob/main/red-light-green-light.png?raw=true",
+				Title = "Red Light Green Light",
+			},
+			{
+				"Dalgona",
+				"https://github.com/stormzdev/image-archive/blob/main/dalgona.png?raw=true",
+				Title = "Dalgona",
+			},
+			{
+				"Pentathlon",
+				"https://github.com/stormzdev/image-archive/blob/main/pentathlon.png?raw=true",
+				Title = "Pentathlon",
+			},
+			{
+				"Lights Out",
+				"https://github.com/stormzdev/image-archive/blob/main/lights-out.png?raw=true",
+				Title = "Lights Out",
+			},
+			{
+				"Hide & Seek",
+				"https://github.com/stormzdev/image-archive/blob/main/hide-and-seek.png?raw=true",
+				Title = "Hide And Seek",
+			},
+			{
+				"Tug Of War",
+				"https://github.com/stormzdev/image-archive/blob/main/tug-of-war.png?raw=true",
+				Title = "Tug Of War",
+			},
+			{
+				"Jump Rope",
+				"https://github.com/stormzdev/image-archive/blob/main/jump-rope.png?raw=true",
+				Title = "Jump Rope",
+			},
+			{
+				"Glass Bridge",
+				"https://github.com/stormzdev/image-archive/blob/main/glass-bridge.png?raw=true",
+				Title = "Glass Bridge",
+			},
+			{
+				"Mingle",
+				"https://github.com/stormzdev/image-archive/blob/main/mingle.png?raw=true",
+				Title = "Mingle",
+			},
+			{
+				"Sky & Squid Game",
+				"https://github.com/stormzdev/image-archive/blob/main/squid-game.png?raw=true",
+				Title = "Sky & Squid Game",
+			},
+		},
+	})
+
+	local flag = false
+	local str = "rbxassetid://88400194373338"
+	local walkSpeed = 16
+	local jumpPower = 50
+
+	local function fn16(arg)
+		local character = localPlayer.Character
+		if not character then
+			return
+		end
+		local humanoid = character:FindFirstChild("Humanoid")
+		if not humanoid then
+			return
+		end
+
+		if not arg then
+			if humanoid.WalkSpeed > 0 then
+				walkSpeed = humanoid.WalkSpeed
+			end
+
+			if humanoid.JumpPower > 0 then
+				jumpPower = humanoid.JumpPower
+			end
+
+			humanoid.WalkSpeed = 0
+			humanoid.JumpPower = 0
+		else
+			humanoid.WalkSpeed = walkSpeed
+			humanoid.JumpPower = jumpPower
+		end
+	end
+
+	local function fn17()
+		local character = localPlayer.Character
+		character = character and character:FindFirstChild("HumanoidRootPart")
+		if not character then
+			return false
+		end
+		local position = character.Position
+
+		local function fn18(arg2, arg3, arg4)
+			return arg2.X >= math.min(arg3.X, arg4.X) and arg2.X <= math.max(arg3.X, arg4.X) and arg2.Z >= math.min(arg3.Z, arg4.Z) and arg2.Z <= math.max(arg3.Z, arg4.Z)
+		end
+
+		if (fn18(position, Vector3.new(115, 1023, 84), Vector3.new(103, 1023, 168)) or fn18(position, Vector3.new(103, 1023, 168), Vector3.new(-216, 1023, 83))) and math.abs(position.Y - 1023) < 100 then
+			return true
+		end
+		return false
+	end
+
+	v2.RLGL:Button({
+		Title = "TP To End",
+		Callback = function()
+			local lastTPTime = tbl3.lastTPTime
+
+			if tick() - lastTPTime < 10 then
+				local lastTPTime2 = tbl3.lastTPTime
+				fn5(" Cooldown", "Please wait " .. math.ceil(10 - tick() - lastTPTime2) .. "s before teleporting again.")
+				return
+			end
+
+			if fn4("RedLightGreenLight") then
+				fn3(CFrame.new(-45, 1025, 137))
+				tbl3.lastTPTime = tick()
+			else
+				fn5(nil, "Red Light Green Light is not currently running.")
+			end
+		end,
+	})
+
+	v2.RLGL:Button({
+		Title = "TP To Start",
+		Callback = function()
+			local lastTPTime = tbl3.lastTPTime
+
+			if tick() - lastTPTime < 10 then
+				local lastTPTime2 = tbl3.lastTPTime
+				fn5(" Cooldown", "Please wait " .. math.ceil(10 - tick() - lastTPTime2) .. "s before teleporting again.")
+				return
+			end
+
+			if fn4("RedLightGreenLight") then
+				fn3(CFrame.new(-49, 1023, -540))
+				tbl3.lastTPTime = tick()
+			else
+				fn5(nil, "Red Light Green Light is not currently running.")
+			end
+		end,
+	})
+
+	v2.RLGL:Button({
+		Title = "Remove Injury",
+		Callback = function()
+			if not fn4("RedLightGreenLight") then
+				fn5(nil, "Red Light Green Light is not currently running.")
+				return
+			end
+
+			if not localPlayer then
+				return
+			end
+			local character = localPlayer.Character
+			if not character then
+				return
+			end
+			local humanoid = character:FindFirstChild("Humanoid")
+			local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
+			if not (humanoid and humanoidRootPart) then
+				return
+			end
+			local torso = character:FindFirstChild("Torso") or character:FindFirstChild("UpperTorso")
+			humanoid.PlatformStand = false
+			humanoid:ChangeState(Enum.HumanoidStateType.GettingUp)
+			humanoid:SetStateEnabled(Enum.HumanoidStateType.Freefall, true)
+			humanoid:SetStateEnabled(Enum.HumanoidStateType.FallingDown, false)
+			humanoid:SetStateEnabled(Enum.HumanoidStateType.Jumping, true)
+
+			for _, v3 in pairs({
+				Enum.HumanoidStateType.FallingDown,
+				Enum.HumanoidStateType.Seated,
+				Enum.HumanoidStateType.Swimming,
+				Enum.HumanoidStateType.Flying,
+				Enum.HumanoidStateType.StrafingNoPhysics,
+				Enum.HumanoidStateType.Ragdoll,
+			}) do
+				humanoid:SetStateEnabled(v3, false)
+			end
+
+			for _, child in pairs(humanoidRootPart:GetChildren()) do
+				if child:IsA("BallSocketConstraint") or child.Name:match("^CacheAttachment") then
+					child:Destroy()
+				end
+			end
+
+			if torso then
+				for _, v3 in pairs({ "Left Hip", "Left Shoulder", "Neck", "Right Hip", "Right Shoulder" }) do
+					local v4 = torso:FindFirstChild(v3)
+
+					if v4 and v4:IsA("Motor6D") and not v4.Part0 then
+						v4.Part0 = torso
+					end
+				end
+			end
+
+			for _, child in pairs(character:GetChildren()) do
+				if child:IsA("BasePart") and child:FindFirstChild("BoneCustom") then
+					child.BoneCustom:Destroy()
+				end
+			end
+
+			for _, v3 in pairs({ "Ragdoll", "Stun", "RotateDisabled", "RagdollWakeupImmunity", "Injured" }) do
+				local v4 = character:FindFirstChild(v3)
+
+				if v4 then
+					v4:Destroy()
+				end
+			end
+
+			local effects = Workspace:FindFirstChild("Effects")
+
+			if effects then
+				local localRagdolls = effects:FindFirstChild("LocalRagdolls")
+
+				if localRagdolls then
+					local v3 = localRagdolls:FindFirstChild(localPlayer.Name)
+
+					if v3 then
+						v3:Destroy()
+					end
+				end
+			end
+
+			if character:GetAttribute("Injured") then
+				character:SetAttribute("Injured", false)
+			end
+		end,
+	})
+
+	v2.RLGL:Button({
+		Title = "Anti Crawl",
+		Callback = function()
+			if not fn4("RedLightGreenLight") then
+				fn5(nil, "Red Light Green Light is not currently running.")
+				return
+			end
+			fn5(nil, "Anti Crawl Enabled")
+
+			task.spawn(function()
+				while fn4("RedLightGreenLight") do
+					local character = localPlayer.Character
+
+					if character and character:FindFirstChild("Crawling") then
+						character.Crawling:Destroy()
+					end
+
+					task.wait(0.25)
+				end
+			end)
+		end,
+	})
+
+	v2.RLGL:Toggle({
+		Title = "Freeze On Red Light",
+		Callback = function(autoStopEnabled)
+			tbl.autoStopEnabled = autoStopEnabled
+
+			if tbl.autoStopEnabled then
+				if tbl2.freezeThread then
+					return
+				end
+				tbl2.freezeThread = true
+
+				task.spawn(function()
+					while tbl2.freezeThread and tbl.autoStopEnabled do
+						if not fn4("RedLightGreenLight") then
+							if flag then
+								fn16(true)
+								flag = false
+							end
+						else
+							local playerGui = localPlayer:FindFirstChild("PlayerGui")
+							local flag2 = false
+
+							if playerGui then
+								local impactFrames = playerGui:FindFirstChild("ImpactFrames")
+
+								if impactFrames then
+									local trafficLightEmpty = impactFrames:FindFirstChild("TrafficLightEmpty")
+
+									if trafficLightEmpty and trafficLightEmpty.Image == str then
+										flag2 = true
+									end
+								end
+							end
+
+							if flag2 and not fn17() then
+								if not flag then
+									fn16(false)
+									flag = true
+								end
+
+								local character = localPlayer.Character
+
+								if character then
+									local humanoid = character:FindFirstChild("Humanoid")
+
+									if humanoid then
+										humanoid.WalkSpeed = 0
+										humanoid.JumpPower = 0
+									end
+
+									local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
+
+									if humanoidRootPart then
+										humanoidRootPart.Velocity = Vector3.zero
+									end
+								end
+							elseif flag then
+								fn16(true)
+								flag = false
+							end
+						end
+
+						task.wait(0.1)
+					end
+
+					tbl2.freezeThread = nil
+
+					if flag then
+						fn16(true)
+						flag = false
+					end
+				end)
+			end
+		end,
+	})
+
+	v2.RLGL:Toggle({
+		Title = "Auto TP End Last Second",
+		Callback = function(autoTPEndEnabled)
+			tbl.autoTPEndEnabled = autoTPEndEnabled
+
+			if tbl.autoTPEndEnabled then
+				if tbl2.autoTPEndThread then
+					return
+				end
+				tbl2.autoTPEndThread = true
+
+				task.spawn(function()
+					while tbl2.autoTPEndThread and tbl.autoTPEndEnabled do
+						if fn4("RedLightGreenLight") then
+							local attribute = workspace:GetAttribute("CurrentGameTime")
+
+							if attribute then
+								if attribute <= 3 and attribute > 0 then
+									local character = localPlayer.Character
+									character = character and character:FindFirstChild("HumanoidRootPart")
+									local flag2 = true
+
+									if character then
+										local position = character.Position
+
+										local function fn18(arg, arg4, arg5)
+											return arg.X >= math.min(arg4.X, arg5.X) and arg.X <= math.max(arg4.X, arg5.X) and arg.Z >= math.min(arg4.Z, arg5.Z) and arg.Z <= math.max(arg4.Z, arg5.Z)
+										end
+
+										if (fn18(position, Vector3.new(115, 1023, 84), Vector3.new(103, 1023, 168)) or fn18(position, Vector3.new(103, 1023, 168), Vector3.new(-216, 1023, 83))) and math.abs(position.Y - 1023) < 100 then
+											flag2 = false
+										end
+									end
+
+									if flag2 then
+										fn5(nil, "Last 3 Second Left Teleporting End")
+										fn3(CFrame.new(-45, 1025, 137))
+									end
+
+									task.wait(5)
+								end
+							end
+						end
+
+						task.wait(1)
+					end
+
+					tbl2.autoTPEndThread = nil
+				end)
+			end
+		end,
+	})
+
+	local tbl10 = {}
+	local connection = nil
+	local thread = nil
+
+	local function fn18()
+		local effects = workspace:FindFirstChild("Effects")
+		if not effects then
+			return nil
+		end
+
+		for _, child in ipairs(effects:GetChildren()) do
+			if child:IsA("Model") and string.find(child.Name, "Outline") then
+				return child
+			end
+		end
+
+		return nil
+	end
+
+	local function fn19()
+		for k, v3 in pairs(tbl10) do
+			if k and k.Parent then
+				pcall(function()
+					k.Position = v3.Position
+					k.Transparency = v3.Transparency
+				end)
+			end
+		end
+
+		tbl10 = {}
+	end
+
+	local function fn20()
+		local playerGui = localPlayer:FindFirstChild("PlayerGui")
+		playerGui = playerGui and playerGui:FindFirstChild("DalgonaUI")
+		playerGui = playerGui and playerGui:FindFirstChild("StressBar")
+
+		if playerGui and playerGui:IsA("GuiObject") then
+			local fill = playerGui:FindFirstChild("Fill") or playerGui:FindFirstChild("Bar")
+			if fill and fill:IsA("GuiObject") then
+				return fill.Size.X.Scale
+			end
+		end
+
+		return 0
+	end
+
+	local function fn21()
+		if not fn4("Dalgona") then
+			fn5(nil, "Dalgona is not currently running.")
+			return
+		end
+
+		pcall(function()
+			tbl5.Fire("DALGONATEMPREMPTE", { Completed = true })
+			tbl5.Fire("DALGONATEMPREMPTE", { Success = true })
+		end)
+
+		pcall(function()
+			local remotes = ReplicatedStorage:FindFirstChild("Remotes")
+			remotes = remotes and remotes:FindFirstChild("DALGONATEMPREMPTE")
+
+			if remotes and remotes:IsA("RemoteEvent") then
+				remotes:FireServer({ Completed = true })
+				remotes:FireServer({ Success = true })
+			end
+		end)
+
+		local v3 = fn18()
+
+		if v3 then
+			local n3 = #v3:GetChildren()
+		end
+
+		local getupvalues_ = debug and (debug.getupvalues or debug.get_upvalues) or getupvalues
+		local setupvalue_ = debug and (debug.setupvalue or debug.setup_value) or setupvalue
+		local getconstants_ = debug and (debug.getconstants or debug.get_constants) or getconstants
+
+		local fn22 = typeof(filtergc) == "function" and function()
+			return filtergc("function", {}, false)
+		end
+
+		local flag2
+
+		if fn22 then
+			flag2 = fn22
+		else
+			flag2 = typeof(getgc) == "function" and getgc
+		end
+
+		if flag2 and getupvalues_ and setupvalue_ then
+			local v4 = nil
+
+			if typeof(filtergc) == "function" then
+				pcall(function()
+					v4 = filtergc("function", {}, false)
+				end)
+			end
+
+			if not v4 and typeof(flag2) == "function" then
+				pcall(function()
+					v4 = flag2()
+				end)
+			end
+
+			if type(v4) == "table" then
+				for _, v5 in ipairs(v4) do
+					if type(v5) == "function" then
+						local ok, result = pcall(getconstants_, v5)
+
+						if ok then
+							ok = type(result) == "table"
+						end
+
+						if ok then
+							local v6 = table.find(result, "clicked wrong in dalgona ")
+							local v7 = table.find(result, "Completed")
+							local v8 = table.find(result, "Progress")
+
+							if v6 or v7 and v8 then
+								local ok2, result2 = pcall(getupvalues_, v5)
+								local flag3
+
+								if ok2 then
+									flag3 = type(result2) == "table"
+								else
+									flag3 = ok2
+								end
+
+								if flag3 then
+									for k, v9 in pairs(result2) do
+										local flag4 = type(v9) == "table"
+
+										if flag4 then
+											flag4 = typeof(v9.FireServer) == "function"
+										end
+
+										if flag4 then
+											pcall(v9.FireServer, v9, { Completed = true })
+											pcall(v9.FireServer, v9, { Success = true })
+										end
+
+										if type(v9) == "number" and v9 >= 0 and v9 <= 5000 then
+											pcall(setupvalue_, v5, k, 999999)
+										end
+
+										if type(v9) == "boolean" and v9 == true then
+											pcall(setupvalue_, v5, k, false)
+										end
+									end
+								end
+							end
+						end
+					end
+				end
+			end
+		end
+
+		pcall(function()
+			if v3 then
+				for _, child in ipairs(v3:GetChildren()) do
+					if child:IsA("BasePart") then
+						child:SetAttribute("Done", true)
+						child.Color = Color3.fromRGB(0, 255, 0)
+						child.Material = Enum.Material.Neon
+						child.Transparency = 0
+						child.Name = "DalgonaClickPart"
+					end
+				end
+			end
+		end)
+
+		pcall(function()
+			local currentCamera = workspace.CurrentCamera
+
+			if currentCamera then
+				currentCamera.CameraType = Enum.CameraType.Custom
+			end
+
+			local playerGui = localPlayer:FindFirstChild("PlayerGui")
+			local dalgonaUI = playerGui and playerGui:FindFirstChild("DalgonaUI")
+
+			if dalgonaUI then
+				dalgonaUI.Enabled = false
+			end
+		end)
+
+		fn5("Dalgona", "Dalgona Completed Successfully")
+	end
+
+	v2.Dalgona:Button({
+		Title = "Auto Complete Dalgona",
+		Patched = true,
+		Locked = true,
+		Callback = function()
+			fn21()
+		end,
+	})
+
+	v2.Dalgona:Toggle({
+		Title = "One Click Complete",
+		Callback = function(oneClickDalgonaEnabled)
+			tbl.oneClickDalgonaEnabled = oneClickDalgonaEnabled
+
+			if oneClickDalgonaEnabled then
+				if not connection then
+					connection = RunService.RenderStepped:Connect(function()
+						if not tbl.oneClickDalgonaEnabled then
+							return
+						end
+
+						if not fn4("Dalgona") then
+							if next(tbl10) then
+								fn19()
+							end
+
+							return
+						end
+
+						pcall(function()
+							local mouse = localPlayer:GetMouse()
+							if not mouse or not mouse.Hit then
+								return
+							end
+							local v3 = fn18()
+
+							if v3 then
+								local position = mouse.Hit.Position
+
+								for _, child in ipairs(v3:GetChildren()) do
+									if child:IsA("BasePart") and not child:GetAttribute("Done") then
+										if not tbl10[child] then
+											tbl10[child] = { Position = child.Position, Transparency = child.Transparency }
+										end
+
+										child.Position = position
+										child.Transparency = 1
+									end
+								end
+							end
+						end)
+					end)
+				end
+			else
+				if connection then
+					pcall(function()
+						connection:Disconnect()
+					end)
+
+					connection = nil
+				end
+
+				fn19()
+			end
+		end,
+	})
+
+	v2.Dalgona:Toggle({
+		Title = "Anti-Crack Dalgona",
+		Default = false,
+		Callback = function(antiCrackDalgonaEnabled)
+			tbl.antiCrackDalgonaEnabled = antiCrackDalgonaEnabled
+
+			if antiCrackDalgonaEnabled then
+				if not tbl._dalgonaCrackLoop then
+					tbl._dalgonaCrackLoop = task.spawn(function()
+						local getupvalues_ = debug and (debug.getupvalues or debug.get_upvalues) or getupvalues
+						local setupvalue_ = debug and (debug.setupvalue or debug.setup_value) or setupvalue
+						local getconstants_ = debug and (debug.getconstants or debug.get_constants) or getconstants
+
+						local function fn22()
+						end
+
+						while tbl.antiCrackDalgonaEnabled do
+							if fn4("Dalgona") then
+								pcall(function()
+									local v3 = nil
+
+									if typeof(filtergc) == "function" then
+										local n3 = 300100906
+
+										pcall(function()
+											v3 = filtergc("function", {}, false)
+										end)
+									end
+
+									local flag2 = not v3
+
+									if flag2 then
+										flag2 = typeof(getgc) == "function"
+									end
+
+									if flag2 then
+										pcall(function()
+											v3 = getgc()
+										end)
+									end
+
+									if type(v3) == "table" then
+										for _, v4 in ipairs(v3) do
+											if type(v4) == "function" then
+												local ok, result = pcall(getconstants_, v4)
+
+												if ok then
+													ok = type(result) == "table"
+												end
+
+												if ok then
+													local flag3 = false
+
+													for _, v5 in pairs(result) do
+														if v5 == "dalgona rework failed crack" or v5 == "ShapeName" and table.find(result, "FullyCracked") then
+															flag3 = true
+															break
+														end
+													end
+
+													if flag3 and hookfunction then
+														pcall(hookfunction, v4, fn22)
+													end
+
+													if table.find(result, "clicked wrong in dalgona ") and getupvalues_ and setupvalue_ then
+														local ok2, result2 = pcall(getupvalues_, v4)
+
+														if ok2 then
+															ok2 = type(result2) == "table"
+														end
+
+														if ok2 then
+															for k, v5 in pairs(result2) do
+																if type(v5) == "function" then
+																	local ok3, result3 = pcall(getconstants_, v5)
+
+																	if ok3 then
+																		ok3 = type(result3) == "table"
+																	end
+
+																	if ok3 then
+																		for _, v6 in pairs(result3) do
+																			if v6 == "CrackAmount" or v6 == "FullyCracked" or v6 == "ScreenHighlight" or v6 == "dalgona rework failed crack" then
+																				pcall(setupvalue_, v4, k, fn22)
+																			end
+																		end
+																	end
+																end
+															end
+														end
+													end
+												end
+											end
+										end
+									end
+								end)
+
+								pcall(function()
+									local playerGui = localPlayer:FindFirstChild("PlayerGui")
+									playerGui = playerGui and playerGui:FindFirstChild("DalgonaUI")
+									playerGui = playerGui and playerGui:FindFirstChild("Breathing")
+
+									if playerGui then
+										local crackProgressBar = playerGui:FindFirstChild("CrackProgressBar")
+
+										if crackProgressBar and crackProgressBar:FindFirstChild("Holder") and crackProgressBar.Holder:FindFirstChild("Fill") then
+											crackProgressBar.Holder.Fill.Size = UDim2.new(0, 0, 1, 0)
+										end
+									end
+								end)
+							end
+
+							task.wait(0.25)
+						end
+
+						tbl._dalgonaCrackLoop = nil
+					end)
+				end
+			elseif tbl._dalgonaCrackLoop then
+				pcall(task.cancel, tbl._dalgonaCrackLoop)
+				tbl._dalgonaCrackLoop = nil
+			end
+		end,
+	})
+
+	v2.Dalgona:Toggle({
+		Title = "Free Lighter",
+		Callback = function(arg)
+			if arg then
+				localPlayer:SetAttribute("HasLighter", true)
+			else
+				localPlayer:SetAttribute("HasLighter", nil)
+			end
+		end,
+	})
+
+	v2.Dalgona:Toggle({
+		Title = "Auto Relax",
+		Callback = function(autoRelaxEnabled)
+			tbl.autoRelaxEnabled = autoRelaxEnabled
+
+			if tbl.autoRelaxEnabled and not thread then
+				thread = task.spawn(function()
+					tbl3.lastRelaxTime = 0
+
+					while tbl.autoRelaxEnabled do
+						if fn4("Dalgona") then
+							local flag2 = fn20() > 0
+
+							if flag2 then
+								local lastRelaxTime = tbl3.lastRelaxTime
+								flag2 = tick() - lastRelaxTime >= 2.1
+							end
+
+							if flag2 then
+								fn10("q")
+								tbl3.lastRelaxTime = tick()
+							end
+						end
+
+						task.wait(1)
+					end
+
+					thread = nil
+				end)
+			end
+		end,
+	})
+
+	v2.Pentathlon:Button({
+		Title = "Auto Complete Ddakji",
+		Callback = function()
+			if not guid then
+				fn5(nil, "Pentathlon is not currently running.")
+				return
+			end
+			local currentCamera = Workspace.CurrentCamera
+			local n3 = currentCamera.CFrame.Position + currentCamera.CFrame.LookVector * 10
+			local viewportSize = currentCamera.ViewportSize
+			local v3 = currentCamera:ViewportPointToRay(viewportSize.X * 0.5, viewportSize.Y * 0.5)
+			local raycastParams = RaycastParams.new()
+			raycastParams.FilterType = Enum.RaycastFilterType.Include
+			local pentathlonMap = Workspace:FindFirstChild("PentathlonMap")
+			raycastParams.FilterDescendantsInstances = pentathlonMap and { pentathlonMap } or {}
+			local hit = Workspace:Raycast(v3.Origin, v3.Direction * 500, raycastParams)
+
+			if hit and hit.Position then
+				n3 = hit.Position
+			end
+
+			if fn14("Thrown", { Power = 1, Position = n3 }) then
+				fn5("Pentathlon", "Ddakji Completed")
+			else
+				fn5(" Error", "Wait for game to start")
+			end
+		end,
+	})
+
+	v2.Pentathlon:Button({
+		Title = "Auto Complete Flying Stone",
+		Callback = function()
+			if not guid then
+				fn5(nil, "Pentathlon is not currently running.")
+				return
+			end
+			local character = localPlayer.Character
+			character = character and character:FindFirstChild("HumanoidRootPart")
+
+			if character then
+				local lookVector = nil
+
+				for _, descendant in ipairs(Workspace:GetDescendants()) do
+					if descendant.Name == "Target" and descendant:IsA("BasePart") then
+						lookVector = descendant
+						break
+					else
+						lookVector = nil
+					end
+				end
+
+				local n3 = character.Position + Vector3.new(0, 1.5, 0)
+
+				if lookVector then
+					lookVector = CFrame.lookAt(character.Position, lookVector.Position, Vector3.new(0, 1, 0)).LookVector
+				end
+
+				if not lookVector then
+					lookVector = Vector3.new(0, 0, 1)
+				end
+
+				if fn14("Thrown", { Direction = lookVector, ThrowPower = "Perfect", Origin = n3 }) then
+					fn5("Pentathlon", "Flying Stone Completed")
+				else
+					fn5(" Error", "Wait for game to start")
+				end
+			end
+		end,
+	})
+
+	v2.Pentathlon:Button({
+		Title = "Auto Gonggi (Spam This)",
+		Callback = function()
+			if not guid then
+				fn5(nil, "Pentathlon is not currently running.")
+				return
+			end
+
+			task.spawn(function()
+				local tbl11 = {
+					"YTriangle",
+					"RCircle",
+					"Square",
+					"GTriangle",
+					"BCircle",
+					"BSquare",
+					"BTriangle",
+					"BStar",
+					"BUmbrella",
+					"YCircle",
+					"YSquare",
+					"YStar",
+					"YUmbrella",
+					"RTriangle",
+					"RSquare",
+					"RStar",
+					"RUmbrella",
+					"GCircle",
+					"GSquare",
+					"GStar",
+					"GUmbrella",
+					"Triangle",
+					"Circle",
+					"Star",
+					"Umbrella",
+				}
+
+				pcall(function()
+					fn14("Thrown", {})
+				end)
+
+				for _, v3 in ipairs(tbl11) do
+					pcall(function()
+						fn14("GotPiece", { Name = v3 })
+					end)
+				end
+
+				pcall(function()
+					fn14("Catch", {})
+				end)
+
+				pcall(function()
+					fn14("Caught", {})
+				end)
+
+				local flag2 = false
+
+				pcall(function()
+					flag2 = fn14("TimeSlowFinish", {})
+				end)
+
+				if flag2 then
+					fn5("Pentathlon", "Gonggi Part Got Completed")
+				else
+					fn5(" Error", "Check if game started")
+				end
+			end)
+		end,
+	})
+
+	v2.Pentathlon:Button({
+		Title = "Auto Complete Spinning Top",
+		Callback = function()
+			if not guid then
+				fn5(nil, "Pentathlon is not currently running.")
+				return
+			end
+
+			task.spawn(function()
+				fn14("Tied", {})
+				task.wait(0.01)
+
+				if fn14("Thrown", {}) then
+					fn5("Pentathlon", "Spinning Top Completed")
+				else
+					fn5(" Error", "Wait for game to start")
+				end
+			end)
+		end,
+	})
+
+	v2.Pentathlon:Button({
+		Title = "Auto Complete Jegi",
+		Callback = function()
+			if not guid then
+				fn5(nil, "Pentathlon is not currently running.")
+				return
+			end
+
+			task.spawn(function()
+				local flag2 = false
+
+				for i = 1, 6 do
+					flag2 = fn14("Kick", { Lose = false })
+					task.wait(0.01)
+				end
+
+				if flag2 then
+					fn5("Pentathlon", "Jegi Completed")
+				else
+					fn5(" Error", "Wait for game to start")
+				end
+			end)
+		end,
+	})
+
+	local flag2 = nil
+	local tbl11 = {}
+	local flag3 = false
+	local tbl12 = {}
+
+	local function fn22()
+		for _, player in pairs(Players:GetPlayers()) do
+			if player ~= localPlayer and player.Character then
+				if not player.Character:FindFirstChild("LightsOutESP") then
+					local highlight = Instance.new("Highlight")
+					highlight.Name = "LightsOutESP"
+					highlight.FillColor = Color3.fromRGB(255, 0, 0)
+					highlight.OutlineColor = Color3.fromRGB(255, 255, 255)
+					highlight.FillTransparency = 0.5
+					highlight.OutlineTransparency = 0
+					highlight.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+					highlight.Parent = player.Character
+					table.insert(tbl11, highlight)
+				end
+			end
+		end
+	end
+
+	local function fn23()
+		for _, v3 in ipairs(tbl11) do
+			if v3 and v3.Parent then
+				v3:Destroy()
+			end
+		end
+
+		tbl11 = {}
+	end
+
+	local function fn24()
+		local character = localPlayer.Character
+		if not character then
+			return
+		end
+		local humanoid = character:FindFirstChildOfClass("Humanoid")
+		if not humanoid then
+			return
+		end
+
+		local connection2 = (humanoid:FindFirstChildOfClass("Animator") or humanoid).AnimationPlayed:Connect(function(arg)
+			if arg.Animation and string.find(string.lower(arg.Animation.Name), "dash") then
+				flag3 = true
+
+				arg.Stopped:Connect(function()
+					flag3 = false
+				end)
+			end
+		end)
+
+		table.insert(tbl12, connection2)
+	end
+
+	v2["Lights Out"]:Button({
+		Title = "TP To Roof",
+		Callback = function()
+			if fn4("LightsOut") then
+				local character = localPlayer.Character
+				character = character and character:FindFirstChild("HumanoidRootPart")
+
+				if character then
+					character.CFrame = CFrame.new(198, 145, -93)
+					fn5("Lights Out", "Teleported to roof")
+				end
+			else
+				fn5(nil, "Lights Out is not currently running.")
+			end
+		end,
+	})
+
+	v2["Lights Out"]:Toggle({
+		Title = "ESP All",
+		Callback = function(espLightsOutEnabled)
+			tbl.espLightsOutEnabled = espLightsOutEnabled
+
+			if tbl.espLightsOutEnabled then
+				if flag2 then
+					return
+				end
+				flag2 = true
+
+				task.spawn(function()
+					while tbl.espLightsOutEnabled and flag2 do
+						if fn4("LightsOut") then
+							fn22()
+						else
+							fn23()
+						end
+
+						task.wait(2)
+					end
+
+					fn23()
+					flag2 = nil
+				end)
+			else
+				fn23()
+			end
+		end,
+	})
+
+	v2["Lights Out"]:Toggle({
+		Title = "Dash Assist",
+		Callback = function(dashAssistEnabled)
+			tbl.dashAssistEnabled = dashAssistEnabled
+
+			if tbl.dashAssistEnabled then
+				fn24()
+
+				local connection2 = localPlayer.CharacterAdded:Connect(function()
+					task.wait(0.5)
+
+					if tbl.dashAssistEnabled then
+						fn24()
+					end
+				end)
+
+				table.insert(tbl12, connection2)
+
+				local connection3 = RunService.Heartbeat:Connect(function()
+					if not tbl.dashAssistEnabled or not flag3 then
+						return
+					end
+
+					if not fn4("LightsOut") then
+						return
+					end
+					local character = localPlayer.Character
+					local humanoidRootPart = character and character:FindFirstChild("HumanoidRootPart")
+					if not humanoidRootPart then
+						return
+					end
+					local huge = math.huge
+					local v3 = nil
+
+					for _, player in pairs(Players:GetPlayers()) do
+						if player ~= localPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") and player.Character:FindFirstChild("Humanoid") and player.Character.Humanoid.Health > 0 then
+							local magnitude = (player.Character.HumanoidRootPart.Position - humanoidRootPart.Position).Magnitude
+
+							if magnitude < huge then
+								huge = magnitude
+								v3 = player
+							end
+						end
+					end
+
+					if v3 and v3.Character and v3.Character:FindFirstChild("HumanoidRootPart") then
+						local position = v3.Character.HumanoidRootPart.Position
+						humanoidRootPart.CFrame = CFrame.lookAt(humanoidRootPart.Position, Vector3.new(position.X, humanoidRootPart.Position.Y, position.Z))
+					end
+				end)
+
+				table.insert(tbl12, connection3)
+			else
+				flag3 = false
+
+				for _, v3 in pairs(tbl12) do
+					pcall(function()
+						v3:Disconnect()
+					end)
+				end
+
+				table.clear(tbl12)
+			end
+		end,
+	})
+
+	v2["Lights Out"]:Toggle({
+		Title = "Auto TP Roof Health Under 30",
+		Callback = function(autoTPRoofUnder30Enabled)
+			tbl.autoTPRoofUnder30Enabled = autoTPRoofUnder30Enabled
+
+			if tbl.autoTPRoofUnder30Enabled then
+				if tbl2.autoTPRoofUnder30Thread then
+					return
+				end
+				tbl2.autoTPRoofUnder30Thread = true
+
+				task.spawn(function()
+					local flag4 = false
+
+					while tbl2.autoTPRoofUnder30Thread and tbl.autoTPRoofUnder30Enabled do
+						if fn4("LightsOut") then
+							local character = localPlayer.Character
+							local humanoid = character and character:FindFirstChild("Humanoid")
+							character = character and character:FindFirstChild("HumanoidRootPart")
+
+							if humanoid and character and humanoid.Health > 0 and humanoid.Health <= 30 then
+								if not flag4 then
+									character.CFrame = CFrame.new(198, 145, -93)
+									flag4 = true
+								end
+							end
+						else
+							flag4 = false
+						end
+
+						task.wait(0.5)
+					end
+
+					tbl2.autoTPRoofUnder30Thread = nil
+				end)
+			end
+		end,
+	})
+
+	v2["Lights Out"]:Toggle({
+		Title = "Full Bright",
+		Callback = function(lightsOutFullBrightEnabled)
+			_G.LightsOutFullBrightEnabled = lightsOutFullBrightEnabled
+
+			if lightsOutFullBrightEnabled then
+				if not _G.LightsOutFullBrightCacheThread then
+					_G.LightsOutFullBrightCacheThread = true
+
+					task.spawn(function()
+						_G.CachedBrightObjects = {}
+
+						local connection2 = workspace.DescendantAdded:Connect(function(descendant)
+							if _G.LightsOutFullBrightEnabled and fn4("LightsOut") then
+								if descendant:IsA("Light") or descendant:IsA("BasePart") and descendant.Name == "ChangeColorLightsOut" then
+									table.insert(_G.CachedBrightObjects, descendant)
+								end
+							end
+						end)
+
+						local flag4 = false
+
+						while _G.LightsOutFullBrightCacheThread do
+							local LightsOut = _G.LightsOutFullBrightEnabled and fn4("LightsOut")
+
+							if LightsOut and not flag4 then
+								table.clear(_G.CachedBrightObjects)
+								local lightsOutMap = workspace:FindFirstChild("LightsOutMap") or workspace
+								local n3 = 0
+
+								for _, descendant in ipairs(lightsOutMap:GetDescendants()) do
+									if _G.LightsOutFullBrightCacheThread then
+										if descendant:IsA("Light") or descendant:IsA("BasePart") and descendant.Name == "ChangeColorLightsOut" then
+											table.insert(_G.CachedBrightObjects, descendant)
+										end
+
+										n3 += 1
+
+										if n3 % 500 == 0 then
+											task.wait()
+										end
+
+										continue
+									end
+
+									break
+								end
+							elseif not LightsOut and flag4 then
+								table.clear(_G.CachedBrightObjects)
+							end
+
+							task.wait(2)
+							flag4 = LightsOut
+						end
+
+						connection2:Disconnect()
+					end)
+				end
+
+				if not _G.LightsOutFullBrightRenderThread then
+					_G.LightsOutFullBrightRenderThread = RunService.RenderStepped:Connect(function()
+						if _G.LightsOutFullBrightEnabled and fn4("LightsOut") then
+							local Lighting = game:GetService("Lighting")
+							Lighting.Ambient = Color3.fromRGB(150, 150, 150)
+							Lighting.OutdoorAmbient = Color3.fromRGB(150, 150, 150)
+							Lighting.Brightness = 1
+							Lighting.ClockTime = 14
+							local atmosphere = Lighting:FindFirstChildOfClass("Atmosphere")
+
+							if atmosphere then
+								atmosphere.Density = 0
+							end
+
+							local colorCorrectionEffect = Lighting:FindFirstChildOfClass("ColorCorrectionEffect")
+
+							if colorCorrectionEffect then
+								colorCorrectionEffect.TintColor = Color3.fromRGB(255, 255, 255)
+								colorCorrectionEffect.Brightness = 0
+								colorCorrectionEffect.Contrast = 0
+								colorCorrectionEffect.Saturation = 0
+							end
+
+							if _G.CachedBrightObjects then
+								for _, cachedBrightObject in ipairs(_G.CachedBrightObjects) do
+									if cachedBrightObject and cachedBrightObject.Parent then
+										if cachedBrightObject:IsA("Light") then
+											cachedBrightObject.Enabled = true
+
+											if cachedBrightObject.Color.G < 0.2 and cachedBrightObject.Color.B < 0.2 then
+												cachedBrightObject.Color = Color3.fromRGB(255, 255, 255)
+											end
+										elseif cachedBrightObject:IsA("BasePart") then
+											if cachedBrightObject.Color.G < 0.2 and cachedBrightObject.Color.B < 0.2 then
+												cachedBrightObject.Color = Color3.fromRGB(255, 255, 255)
+											end
+										end
+									end
+								end
+							end
+						end
+					end)
+				end
+			else
+				_G.LightsOutFullBrightCacheThread = false
+
+				if _G.LightsOutFullBrightRenderThread then
+					_G.LightsOutFullBrightRenderThread:Disconnect()
+					_G.LightsOutFullBrightRenderThread = nil
+				end
+
+				if _G.CachedBrightObjects then
+					table.clear(_G.CachedBrightObjects)
+				end
+			end
+		end,
+	})
+
+	local tbl13 = {}
+	local tbl14 = {}
+	local tbl15 = {}
+	local tbl16 = {}
+	local tbl17 = {}
+	local tbl18 = {}
+
+	local function fn25()
+		local character = localPlayer.Character
+		if not character then
+			return nil
+		end
+		return character:FindFirstChild("Knife") or localPlayer.Backpack:FindFirstChild("Knife")
+	end
+
+	local function fn26()
+		local character = localPlayer.Character
+		local humanoidRootPart = character and character:FindFirstChild("HumanoidRootPart")
+		if not humanoidRootPart then
+			return nil
+		end
+		local huge = math.huge
+		local v3 = nil
+
+		for _, player in ipairs(Players:GetPlayers()) do
+			if player ~= localPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") and player.Character:FindFirstChild("Humanoid") and player.Character.Humanoid.Health > 0 then
+				if not player:GetAttribute("IsHunter") then
+					local magnitude = (player.Character.HumanoidRootPart.Position - humanoidRootPart.Position).Magnitude
+
+					if magnitude < huge then
+						huge = magnitude
+						v3 = player
+					end
+				end
+			end
+		end
+
+		return v3
+	end
+
+	local function fn27()
+		for _, v3 in pairs(tbl13) do
+			if v3 and v3.Parent then
+				v3:Destroy()
+			end
+		end
+
+		tbl13 = {}
+
+		for _, v3 in pairs(tbl14) do
+			pcall(function()
+				v3:Disconnect()
+			end)
+		end
+
+		tbl14 = {}
+	end
+
+	local function fn28(arg)
+		if not arg or arg == localPlayer then
+			return
+		end
+
+		local function fn29(parent)
+			if not parent then
+				return
+			end
+
+			if tbl13[arg] then
+				tbl13[arg]:Destroy()
+				tbl13[arg] = nil
+			end
+
+			local attribute = arg:GetAttribute("IsHunter")
+			local highlight = Instance.new("Highlight")
+			highlight.Name = fn(8)
+			highlight.FillColor = attribute and Color3.fromRGB(255, 0, 0) or Color3.fromRGB(0, 255, 0)
+			highlight.OutlineColor = Color3.fromRGB(255, 255, 255)
+			highlight.FillTransparency = 0.5
+			highlight.OutlineTransparency = 0
+			highlight.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+			highlight.Parent = parent
+			tbl13[arg] = highlight
+		end
+
+		if arg.Character then
+			fn29(arg.Character)
+		end
+
+		table.insert(tbl14, arg.CharacterAdded:Connect(function(character)
+			task.wait(0.5)
+
+			if tbl.espRolesEnabled then
+				fn29(character)
+			end
+		end))
+	end
+
+	local function fn29()
+		for _, v3 in ipairs(tbl15) do
+			if v3 and v3.Parent then
+				v3:Destroy()
+			end
+		end
+
+		tbl15 = {}
+	end
+
+	local function fn30()
+		for _, v3 in ipairs(tbl16) do
+			if v3 and v3.Parent then
+				v3:Destroy()
+			end
+		end
+
+		tbl16 = {}
+	end
+
+	local function fn31()
+		for _, v3 in pairs(tbl17) do
+			pcall(function()
+				v3:Disconnect()
+			end)
+		end
+
+		tbl17 = {}
+		tbl18 = {}
+	end
+
+	local function fn32(player)
+		if not player or player == localPlayer then
+			return
+		end
+
+		local function fn33(character)
+			if not character then
+				return
+			end
+			local humanoid = character:WaitForChild("Humanoid", 5)
+			if not humanoid then
+				return
+			end
+
+			table.insert(tbl17, (humanoid:WaitForChild("Animator", 5) or humanoid).AnimationPlayed:Connect(function()
+				if not tbl.autoDodgeEnabled then
+					return
+				end
+
+				if not fn4("HideAndSeek") then
+					return
+				end
+
+				if not player:GetAttribute("IsHunter") then
+					return
+				end
+				local character2 = localPlayer.Character
+				character2 = character2 and character2:FindFirstChild("HumanoidRootPart")
+				local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
+				if not (character2 and humanoidRootPart) then
+					return
+				end
+
+				if (character2.Position - humanoidRootPart.Position).Magnitude <= 12 then
+					character2.AssemblyLinearVelocity = (character2.Position - humanoidRootPart.Position).Unit * 50 + Vector3.new(0, 15, 0)
+				end
+			end))
+		end
+
+		if player.Character then
+			fn33(player.Character)
+		end
+
+		table.insert(tbl17, player.CharacterAdded:Connect(fn33))
+	end
+
+	v2["Hide & Seek"]:Button({
+		Title = "Auto Escape",
+		Callback = function()
+			if not fn4("HideAndSeek") then
+				fn5(nil, "Hide And Seek is not active")
+				return
+			end
+			local character = localPlayer.Character
+
+			if character and character:FindFirstChild("HumanoidRootPart") then
+				fn3(CFrame.new(199, 54, -88))
+				fn5(" Escaped", "Teleported to safe zone")
+			end
+		end,
+	})
+
+	v2["Hide & Seek"]:Toggle({
+		Title = "Auto Get Missing Keys",
+		Callback = function(autoGetKeysEnabled)
+			tbl.autoGetKeysEnabled = autoGetKeysEnabled
+
+			if tbl.autoGetKeysEnabled then
+				if tbl2.autoGetKeysThread then
+					return
+				end
+				tbl2.autoGetKeysThread = true
+
+				task.spawn(function()
+					local tbl19 = { "Circle", "Square", "Triangle" }
+
+					while tbl.autoGetKeysEnabled and tbl2.autoGetKeysThread do
+						if fn4("HideAndSeek") then
+							local currentKeys = localPlayer:FindFirstChild("CurrentKeys")
+
+							if currentKeys then
+								local tbl20 = {}
+
+								for _, child in ipairs(currentKeys:GetChildren()) do
+									tbl20[child.Name] = true
+								end
+
+								local tbl21 = {}
+
+								for _, v3 in ipairs(tbl19) do
+									if not tbl20[v3] then
+										tbl21[v3] = true
+									end
+								end
+
+								local effects = workspace:FindFirstChild("Effects")
+
+								if effects then
+									for _, child in ipairs(effects:GetChildren()) do
+										if string.sub(child.Name, 1, 10) == "DroppedKey" then
+											if tbl21[string.sub(child.Name, 11)] then
+												local character = localPlayer.Character
+												character = character and character:FindFirstChild("HumanoidRootPart")
+
+												if character then
+													local pivot = child:IsA("Model") and child:GetPivot() or child.CFrame
+													local cFrame = character.CFrame
+													character.CFrame = pivot
+													task.wait(0.1)
+													character.CFrame = cFrame
+													break
+												end
+											end
+										end
+									end
+								end
+							end
+						end
+
+						task.wait(0.1)
+					end
+
+					tbl2.autoGetKeysThread = nil
+				end)
+			else
+				tbl2.autoGetKeysThread = nil
+			end
+		end,
+	})
+
+	v2["Hide & Seek"]:Toggle({
+		Title = "Auto Kill Hiders",
+		Callback = function(killHidersEnabled)
+			tbl.killHidersEnabled = killHidersEnabled
+
+			if tbl.killHidersEnabled then
+				if not localPlayer:GetAttribute("IsHunter") then
+					fn5(" Not Hunter", "You are not a Hunter.")
+					tbl.killHidersEnabled = false
+					return
+				end
+
+				tbl2.killThread = nil
+				task.wait(0.2)
+				tbl2.killThread = true
+
+				task.spawn(function()
+					local cFrame = localPlayer.Character and localPlayer.Character:FindFirstChild("HumanoidRootPart") and localPlayer.Character.HumanoidRootPart.CFrame
+					local flag4 = false
+
+					while true do
+						if tbl2.killThread and tbl.killHidersEnabled then
+							if not fn4("HideAndSeek") then
+								task.wait(1)
+								task.wait(0.1)
+								continue
+							elseif not localPlayer:GetAttribute("IsHunter") then
+								tbl.killHidersEnabled = false
+								tbl2.killThread = nil
+								break
+							else
+								local v3 = fn26()
+
+								if not v3 then
+									if cFrame and not flag4 then
+										local character = localPlayer.Character
+										character = character and character:FindFirstChild("HumanoidRootPart")
+
+										if character then
+											character.CFrame = cFrame
+											flag4 = true
+										end
+									end
+
+									task.wait(0.5)
+								else
+									local character = v3.Character
+									local humanoid = character and character:FindFirstChild("Humanoid")
+									local humanoidRootPart = character and character:FindFirstChild("HumanoidRootPart")
+
+									while true do
+										character = tbl2.killThread and tbl.killHidersEnabled and character and humanoid and humanoidRootPart and humanoid.Health > 0
+										flag4 = false
+
+										if character then
+											if fn4("HideAndSeek") then
+												local character2 = localPlayer.Character
+												local humanoidRootPart2 = character2 and character2:FindFirstChild("HumanoidRootPart")
+												local humanoid2 = character2 and character2:FindFirstChild("Humanoid")
+
+												if not (not humanoidRootPart2 or not humanoid2) then
+													local n3 = 0
+
+													pcall(function()
+														n3 = game:GetService("Stats").Network.ServerStatsItem["Data Ping"]:GetValue() / 1000
+													end)
+
+													humanoidRootPart2.CFrame = (humanoidRootPart.CFrame + humanoidRootPart.AssemblyLinearVelocity * n3) * CFrame.new(0, 0, 3)
+													humanoidRootPart2.AssemblyLinearVelocity = Vector3.zero
+													local v4 = fn25()
+
+													if v4 then
+														if v4.Parent ~= character2 then
+															v4.Parent = character2
+														end
+
+														pcall(function()
+															v4:Activate()
+														end)
+													end
+
+													task.wait(0.05)
+													character = v3.Character
+													humanoid = character and character:FindFirstChild("Humanoid")
+													humanoidRootPart = character and character:FindFirstChild("HumanoidRootPart")
+													continue
+												end
+											end
+										end
+
+										break
+									end
+								end
+
+								task.wait(0.1)
+								continue
+							end
+						end
+
+						break
+					end
+
+					tbl2.killThread = nil
+				end)
+			else
+				tbl2.killThread = nil
+			end
+		end,
+	})
+
+	v2["Hide & Seek"]:Toggle({
+		Title = "Infinite Stamina",
+		Callback = function(infiniteStaminaEnabled)
+			tbl.infiniteStaminaEnabled = infiniteStaminaEnabled
+
+			if tbl.infiniteStaminaEnabled then
+				if tbl2.infiniteStaminaThread then
+					return
+				end
+
+				tbl2.infiniteStaminaThread = RunService.RenderStepped:Connect(function()
+					if fn4("HideAndSeek") then
+						local character = localPlayer.Character
+
+						if character then
+							local staminaVal = character:FindFirstChild("StaminaVal")
+
+							if staminaVal and staminaVal:IsA("NumberValue") then
+								staminaVal.Value = 100
+							end
+						end
+					end
+				end)
+			elseif tbl2.infiniteStaminaThread then
+				tbl2.infiniteStaminaThread:Disconnect()
+				tbl2.infiniteStaminaThread = nil
+			end
+		end,
+	})
+
+	v2["Hide & Seek"]:Toggle({
+		Title = "Anti Spike",
+		Callback = function(antiSpikeEnabled)
+			_G.AntiSpikeEnabled = antiSpikeEnabled
+
+			if antiSpikeEnabled then
+				if not _G.AntiSpikeThread then
+					_G.AntiSpikeThread = true
+
+					task.spawn(function()
+						_G.CreatedSpikePlatforms = _G.CreatedSpikePlatforms or {}
+
+						local function fn33(arg)
+							if not arg or not arg.Parent or arg.Name == "SafeSpikePlatform" then
+								return
+							end
+							local v3 = string.lower(arg.Name)
+
+							if string.find(v3, "spike") or string.find(v3, "kill") or string.find(v3, "trap") or string.find(v3, "hazard") then
+								if _G.CreatedSpikePlatforms[arg] then
+									return
+								end
+
+								local function fn34()
+									error("devirt: symbolic instruction-decryption key (r40) (at 115:165)")
+								end
+
+								if arg:IsA("BasePart") then
+									fn34(arg.CFrame, 511344481, 480711133, arg.Size)
+								elseif arg:IsA("Model") then
+									local boundingBox, v4 = arg:GetBoundingBox()
+
+									if v4.Magnitude > 0 then
+										fn34(boundingBox, 511344481, 302055580, v4)
+									end
+								end
+							end
+						end
+
+						local function fn34()
+							local hideAndSeekMap = workspace:FindFirstChild("HideAndSeekMap") or workspace
+							local n3 = 0
+
+							for _, descendant in ipairs(hideAndSeekMap:GetDescendants()) do
+								if _G.AntiSpikeThread then
+									fn33(descendant)
+									n3 += 1
+
+									if n3 % 500 == 0 then
+										task.wait()
+									end
+
+									continue
+								end
+
+								break
+							end
+						end
+
+						local connection2 = workspace.DescendantAdded:Connect(function(descendant)
+							if _G.AntiSpikeEnabled and fn4("HideAndSeek") then
+								fn33(descendant)
+							end
+						end)
+
+						local flag4 = false
+
+						while _G.AntiSpikeThread do
+							local HideAndSeek = _G.AntiSpikeEnabled and fn4("HideAndSeek")
+
+							if HideAndSeek and not flag4 then
+								fn34()
+							else
+								flag4 = not HideAndSeek and flag4
+
+								if flag4 then
+									if _G.CreatedSpikePlatforms then
+										for _, createdSpikePlatform in pairs(_G.CreatedSpikePlatforms) do
+											if createdSpikePlatform and createdSpikePlatform.Parent then
+												createdSpikePlatform:Destroy()
+											end
+										end
+
+										table.clear(_G.CreatedSpikePlatforms)
+									end
+								end
+							end
+
+							task.wait(1)
+							flag4 = HideAndSeek
+						end
+
+						connection2:Disconnect()
+					end)
+				end
+			else
+				_G.AntiSpikeThread = false
+
+				if _G.CreatedSpikePlatforms then
+					for _, createdSpikePlatform in pairs(_G.CreatedSpikePlatforms) do
+						if createdSpikePlatform and createdSpikePlatform.Parent then
+							createdSpikePlatform:Destroy()
+						end
+					end
+
+					table.clear(_G.CreatedSpikePlatforms)
+				end
+			end
+		end,
+	})
+
+	v2["Hide & Seek"]:Toggle({
+		Title = "Auto Dodge",
+		Callback = function(autoDodgeEnabled)
+			tbl.autoDodgeEnabled = autoDodgeEnabled
+			fn31()
+
+			if tbl.autoDodgeEnabled then
+				for _, player in ipairs(Players:GetPlayers()) do
+					fn32(player)
+				end
+
+				table.insert(tbl17, Players.PlayerAdded:Connect(fn32))
+			end
+		end,
+	})
+
+	v2["Hide & Seek"]:Toggle({
+		Title = "ESP Roles",
+		Callback = function(espRolesEnabled)
+			tbl.espRolesEnabled = espRolesEnabled
+
+			if tbl.espRolesEnabled then
+				fn27()
+				local v3 = pairs
+
+				for _, player in v3(Players:GetPlayers()) do
+					fn28(player)
+				end
+
+				table.insert(tbl14, Players.PlayerAdded:Connect(function(player)
+					task.wait(1)
+
+					if tbl.espRolesEnabled then
+						fn28(player)
+					end
+				end))
+
+				table.insert(tbl14, Players.PlayerRemoving:Connect(function(player)
+					if tbl13[player] then
+						tbl13[player]:Destroy()
+						tbl13[player] = nil
+					end
+				end))
+			else
+				fn27()
+			end
+		end,
+	})
+
+	v2["Hide & Seek"]:Toggle({
+		Title = "ESP Exit Doors",
+		Callback = function(espExitDoorsEnabled)
+			tbl.espExitDoorsEnabled = espExitDoorsEnabled
+
+			if tbl.espExitDoorsEnabled then
+				if tbl2.espExitDoorsThread then
+					return
+				end
+				tbl2.espExitDoorsThread = true
+
+				task.spawn(function()
+					while tbl.espExitDoorsEnabled and tbl2.espExitDoorsThread do
+						if fn4("HideAndSeek") then
+							local hideAndSeekMap = workspace:FindFirstChild("HideAndSeekMap")
+							hideAndSeekMap = hideAndSeekMap and hideAndSeekMap:FindFirstChild("NEWFIXEDDOORS")
+							hideAndSeekMap = hideAndSeekMap and hideAndSeekMap:FindFirstChild("Floor1")
+							hideAndSeekMap = hideAndSeekMap and hideAndSeekMap:FindFirstChild("EXITDOORS")
+
+							if hideAndSeekMap then
+								for _, child in ipairs(hideAndSeekMap:GetChildren()) do
+									if child.Name == "EXITDOOR" and not child:FindFirstChild("DoorESP") then
+										local highlight = Instance.new("Highlight")
+										highlight.Name = fn(8)
+										highlight.FillColor = Color3.new(1, 0, 0)
+										highlight.OutlineColor = Color3.new(1, 0, 0)
+										highlight.FillTransparency = 0.5
+										highlight.OutlineTransparency = 0
+										highlight.Parent = child
+										table.insert(tbl15, highlight)
+									end
+								end
+							end
+						else
+							fn29()
+						end
+
+						task.wait(1.5)
+					end
+
+					fn29()
+					tbl2.espExitDoorsThread = nil
+				end)
+			else
+				fn29()
+				tbl2.espExitDoorsThread = nil
+			end
+		end,
+	})
+
+	v2["Hide & Seek"]:Toggle({
+		Title = "ESP Keys",
+		Callback = function(espKeysEnabled)
+			tbl.espKeysEnabled = espKeysEnabled
+
+			if tbl.espKeysEnabled then
+				if tbl2.espKeysThread then
+					return
+				end
+				tbl2.espKeysThread = true
+
+				task.spawn(function()
+					while tbl.espKeysEnabled and tbl2.espKeysThread do
+						if fn4("HideAndSeek") then
+							local effects = workspace:FindFirstChild("Effects")
+
+							if effects then
+								for _, child in ipairs(effects:GetChildren()) do
+									if string.sub(child.Name, 1, 10) == "DroppedKey" and not child:FindFirstChild("KeyESP") then
+										local str2 = string.sub(child.Name, 11)
+										local text = "Key"
+
+										if str2 ~= "" then
+											text = "Key " .. str2
+										end
+
+										local billboardGui = Instance.new("BillboardGui")
+										billboardGui.Name = fn(8)
+										billboardGui.AlwaysOnTop = true
+										billboardGui.Size = UDim2.new(0, 100, 0, 30)
+										billboardGui.StudsOffset = Vector3.new(0, 1.5, 0)
+										local textLabel = Instance.new("TextLabel")
+										textLabel.Size = UDim2.new(1, 0, 1, 0)
+										textLabel.BackgroundTransparency = 1
+										textLabel.Text = text
+										textLabel.TextColor3 = Color3.new(1, 1, 0)
+										textLabel.TextStrokeTransparency = 0
+										textLabel.TextSize = 14
+										textLabel.Font = Enum.Font.GothamBold
+										textLabel.Parent = billboardGui
+										billboardGui.Parent = child
+										table.insert(tbl16, billboardGui)
+									end
+								end
+							end
+						else
+							fn30()
+						end
+
+						task.wait(1.5)
+					end
+
+					fn30()
+					tbl2.espKeysThread = nil
+				end)
+			else
+				fn30()
+				tbl2.espKeysThread = nil
+			end
+		end,
+	})
+
+	local flag4 = false
+
+	local function fn33(arg, arg2)
+		return math.abs((arg - arg2 + 180) % 360 - 180)
+	end
+
+	local function fn34(arg)
+		fn10("space")
+
+		if arg then
+			local textButton = arg:FindFirstChild("TextButton") or arg:FindFirstChildWhichIsA("TextButton")
+
+			if textButton then
+				pcall(function()
+					if typeof(firesignal) == "function" then
+						firesignal(textButton.MouseButton1Click)
+						firesignal(textButton.Activated)
+					end
+				end)
+			end
+		end
+	end
+
+	local function fn35()
+		if fn4("TugOfWar") or fn4("Tug Of War") then
+			return true
+		end
+		local v3 = fn11()
+		if v3 and string.find(string.lower(v3), "tug") ~= nil then
+			return true
+		end
+		local playerGui = localPlayer:FindFirstChild("PlayerGui")
+
+		if playerGui then
+			playerGui = playerGui:FindFirstChild("TugOfWarUIV2") or playerGui:FindFirstChild("TugOfWarUI") or playerGui:FindFirstChild("TugofWarRemake")
+		end
+
+		if playerGui then
+			return true
+		end
+		local character = localPlayer.Character
+
+		if character then
+			character = character:FindFirstChild("RopeTool") or character:FindFirstChild("Rope")
+		end
+
+		if character then
+			return true
+		end
+		return false
+	end
+
+	local function fn36()
+		if flag4 then
+			return
+		end
+		flag4 = true
+		local playerGui = localPlayer:FindFirstChild("PlayerGui")
+		if not playerGui then
+			flag4 = false
+			return
+		end
+		local tugOfWarUIV2 = playerGui:WaitForChild("TugOfWarUIV2", 5) or playerGui:FindFirstChild("TugOfWarUI")
+		if not tugOfWarUIV2 then
+			flag4 = false
+			return
+		end
+		local tugofWarRemake = tugOfWarUIV2:FindFirstChild("TugofWarRemake") or tugOfWarUIV2
+		if not tugofWarRemake then
+			flag4 = false
+			return
+		end
+		local circleBase = tugofWarRemake:FindFirstChild("CircleBase")
+		if not circleBase then
+			flag4 = false
+			return
+		end
+
+		while true do
+			if tbl.tugOfWarAutoPullEnabled or tbl.tugOfWarAntiMissEnabled then
+				local attribute = nil
+				local n3 = 144810321
+
+				pcall(function()
+					attribute = localPlayer:GetAttribute("TugOfWarPhase")
+				end)
+
+				if attribute == "QTE" or circleBase.Visible then
+					break
+				else
+					task.wait(0.1)
+					continue
+				end
+			end
+
+			break
+		end
+
+		if not (tbl.tugOfWarAutoPullEnabled or tbl.tugOfWarAntiMissEnabled) then
+			flag4 = false
+			return
+		end
+
+		if not circleBase.Visible then
+			local now = tick()
+
+			while (tbl.tugOfWarAutoPullEnabled or tbl.tugOfWarAntiMissEnabled) and not circleBase.Visible and tick() - now < 10 do
+				task.wait(0.1)
+			end
+		end
+
+		if not (tbl.tugOfWarAutoPullEnabled or tbl.tugOfWarAntiMissEnabled) then
+			flag4 = false
+			return
+		end
+		local arrow = circleBase:FindFirstChild("Arrow")
+		if not arrow then
+			flag4 = false
+			return
+		end
+		local medium = circleBase:FindFirstChild("Medium")
+
+		if not medium then
+			medium = circleBase:FindFirstChild("Small") or circleBase:FindFirstChild("Large")
+		end
+
+		if not medium then
+			flag4 = false
+			return
+		end
+		local n3
+
+		if (localPlayer:GetAttribute("TugOfWarStrategy") or "Standard") == "Stall" then
+			n3 = 14
+		else
+			n3 = 18.2
+		end
+
+		tbl3.lastPressTime = 0
+		local n4 = 0.12
+		local flag5 = false
+		local connection2 = nil
+		local connection3 = nil
+
+		local function fn37()
+			if connection2 then
+				connection2:Disconnect()
+				connection2 = nil
+			end
+
+			if connection3 then
+				connection3:Disconnect()
+				connection3 = nil
+			end
+
+			flag4 = false
+		end
+
+		connection3 = localPlayer.ChildAdded:Connect(function(child)
+			if child.Name == "QTEOver" then
+				fn37()
+			end
+		end)
+
+		connection2 = RunService.RenderStepped:Connect(function()
+			if not arrow or not arrow.Parent or not circleBase.Visible then
+				fn37()
+				return
+			end
+
+			if not (tbl.tugOfWarAutoPullEnabled or tbl.tugOfWarAntiMissEnabled) then
+				fn37()
+				return
+			end
+
+			if not fn35() then
+				fn37()
+				return
+			end
+			local rotation = arrow.Rotation % 360
+			local flag6 = fn33(medium.Rotation % 360, rotation) <= n3
+
+			if tbl.tugOfWarAntiMissEnabled then
+				medium.Rotation = rotation
+				flag6 = true
+			end
+
+			if tbl.tugOfWarAutoPullEnabled then
+				if tbl.tugOfWarAntiMissEnabled then
+					if tick() - (tbl3.lastPressTime or 0) > 0.25 then
+						fn34(circleBase)
+						tbl3.lastPressTime = tick()
+					end
+				else
+					local flag7 = flag6 and not flag5
+
+					if flag7 then
+						flag7 = tick() - (tbl3.lastPressTime or 0) > n4
+					end
+
+					if flag7 then
+						fn34(circleBase)
+						tbl3.lastPressTime = tick()
+					end
+				end
+			end
+
+			flag5 = flag6
+		end)
+
+		task.spawn(function()
+			while flag4 and (tbl.tugOfWarAutoPullEnabled or tbl.tugOfWarAntiMissEnabled) and fn35() do
+				task.wait(1)
+			end
+
+			fn37()
+		end)
+	end
+
+	local function fn37()
+		if tbl.tugOfWarAutoPullEnabled or tbl.tugOfWarAntiMissEnabled then
+			if tbl2.tugOfWarAutoPullThread then
+				return
+			end
+
+			tbl2.tugOfWarAutoPullThread = task.spawn(function()
+				while tbl.tugOfWarAutoPullEnabled or tbl.tugOfWarAntiMissEnabled do
+					if fn35() then
+						pcall(fn36)
+					end
+
+					task.wait(0.5)
+				end
+
+				tbl2.tugOfWarAutoPullThread = nil
+			end)
+		else
+			tbl2.tugOfWarAutoPullThread = nil
+		end
+	end
+
+	v2["Tug Of War"]:Toggle({
+		Title = "Auto Pull",
+		Callback = function(tugOfWarAutoPullEnabled)
+			tbl.tugOfWarAutoPullEnabled = tugOfWarAutoPullEnabled
+			fn37()
+		end,
+	})
+
+	v2["Tug Of War"]:Toggle({
+		Title = "Anti Miss",
+		Callback = function(tugOfWarAntiMissEnabled)
+			tbl.tugOfWarAntiMissEnabled = tugOfWarAntiMissEnabled
+			fn37()
+		end,
+	})
+end
+
+do
+	local flag = false
+	local part = nil
+
+	local function fn10()
+		if flag then
+			if not part or not part.Parent then
+				part = Instance.new("Part")
+				part.Name = fn(8)
+				part.Size = Vector3.new(200, 2, 50)
+				part.Position = Vector3.new(675, 192, 921)
+				part.Anchored = true
+				part.Transparency = 0.6
+				part.Color = Color3.fromRGB(0, 255, 0)
+				part.Material = Enum.Material.ForceField
+				part.Parent = workspace
+			end
+		elseif part then
+			part:Destroy()
+			part = nil
+		end
+	end
+
+	v2["Jump Rope"]:Button({
+		Title = "Rope TP To Start",
+		Callback = function()
+			local lastRopeTPTime = tbl3.lastRopeTPTime
+
+			if tick() - lastRopeTPTime < 10 then
+				local lastRopeTPTime2 = tbl3.lastRopeTPTime
+				fn5(" Cooldown", "Please wait " .. math.ceil(10 - tick() - lastRopeTPTime2) .. "s")
+				return
+			end
+
+			if fn4("JumpRope") then
+				fn3(CFrame.new(616, 197, 921))
+				tbl3.lastRopeTPTime = tick()
+			else
+				fn5(nil, "Jump Rope is not running.")
+			end
+		end,
+	})
+
+	v2["Jump Rope"]:Button({
+		Title = "Rope TP To End",
+		Callback = function()
+			local lastRopeTPTime = tbl3.lastRopeTPTime
+
+			if tick() - lastRopeTPTime < 10 then
+				local lastRopeTPTime2 = tbl3.lastRopeTPTime
+				fn5(" Cooldown", "Please wait " .. math.ceil(10 - tick() - lastRopeTPTime2) .. "s")
+				return
+			end
+
+			if fn4("JumpRope") then
+				fn3(CFrame.new(734, 197, 921))
+				tbl3.lastRopeTPTime = tick()
+			else
+				fn5(nil, "Jump Rope is not running.")
+			end
+		end,
+	})
+
+	v2["Jump Rope"]:Button({
+		Title = "Delete Rope",
+		Callback = function()
+			if fn4("JumpRope") then
+				local effects = Workspace:FindFirstChild("Effects")
+
+				if effects then
+					local rope = effects:FindFirstChild("rope")
+
+					if rope then
+						rope:Destroy()
+						fn5(" Success", "Rope deleted")
+					else
+						fn5(" Not Found", "Rope not found in Effects.")
+					end
+				else
+					fn5(" Not Found", "Effects folder not found.")
+				end
+			else
+				fn5(nil, "Jump Rope is not running.")
+			end
+		end,
+	})
+
+	v2["Jump Rope"]:Toggle({
+		Title = "Anti Fall",
+		Callback = function(arg)
+			flag = arg
+			fn10()
+		end,
+	})
+end
+
+do
+	local flag = false
+	local flag2 = false
+	local connection = nil
+	local thread = nil
+	local tbl7 = {}
+	local tbl8 = {}
+	local tbl9 = {}
+	local tbl10 = { real = Color3.fromRGB(0, 255, 0) }
+	tbl10.delayed = Color3.fromRGB(255, 200, 0)
+	tbl10.fake = Color3.fromRGB(255, 0, 0)
+
+	local function fn10()
+		local glassBridge = workspace:FindFirstChild("GlassBridge") or workspace:FindFirstChild("GlassBridgeMap") or workspace:FindFirstChild("GlassBridgeAnniversary")
+		if glassBridge then
+			return glassBridge
+		end
+
+		for _, child in ipairs(workspace:GetChildren()) do
+			if string.find(string.lower(child.Name), "glass") and string.find(string.lower(child.Name), "bridge") then
+				return child
+			end
+		end
+
+		return nil
+	end
+
+	local function fn11(arg)
+		if not arg or not arg:IsA("BasePart") then
+			return nil
+		end
+
+		if not (arg:GetAttribute("GlassPart") ~= nil or string.find(string.lower(arg.Name), "glass") ~= nil or arg.Parent and arg.Parent:IsA("Model") and string.find(string.lower(arg.Parent.Name), "glass") or arg.Material == Enum.Material.Glass) then
+			return nil
+		end
+		local flag3 = arg:GetAttribute("ActuallyKilling") ~= nil or arg.Parent and arg.Parent:GetAttribute("ActuallyKilling") ~= nil
+		local flag4 = arg:GetAttribute("DelayedBreaking") ~= nil or arg.Parent and arg.Parent:GetAttribute("DelayedBreaking") ~= nil
+		local flag5 = arg:GetAttribute("exploitingisevil") == true or arg.Parent and arg.Parent:GetAttribute("exploitingisevil") == true
+		local flag6 = arg:GetAttribute("Breakable") == true or arg.Parent and arg.Parent:GetAttribute("Breakable") == true
+		if flag3 and flag4 or flag4 then
+			return "delayed"
+		end
+
+		if flag3 or flag5 or flag6 then
+			return "fake"
+		end
+		return "real"
+	end
+
+	local function fn12()
+		for _, v3 in pairs(tbl7) do
+			if v3 and v3.Parent then
+				pcall(function()
+					v3:Destroy()
+				end)
+			end
+		end
+
+		table.clear(tbl7)
+
+		for k, v3 in pairs(tbl8) do
+			if k and k.Parent then
+				local n = 177434424
+
+				pcall(function()
+					k.Color = v3.Color
+					k.Material = v3.Material
+					k.Transparency = v3.Transparency
+				end)
+			end
+		end
+
+		table.clear(tbl8)
+	end
+
+	local function fn13()
+		for _, v3 in pairs(tbl9) do
+			if v3 and v3.Parent then
+				pcall(function()
+					v3:Destroy()
+				end)
+			end
+		end
+
+		table.clear(tbl9)
+	end
+
+	local function fn14()
+		fn12()
+		fn13()
+	end
+
+	local function fn15()
+		local v3 = fn10()
+
+		if not v3 then
+			if not fn4("GlassBridge") then
+				fn14()
+			end
+
+			return
+		end
+
+		local glassHolder = v3:FindFirstChild("GlassHolder") or v3
+
+		for _, descendant in ipairs(glassHolder:GetDescendants()) do
+			if descendant:IsA("BasePart") then
+				local v4 = fn11(descendant)
+
+				if v4 then
+					if flag then
+						local real = tbl10[v4] or tbl10.real
+
+						if not tbl8[descendant] then
+							tbl8[descendant] = { Color = descendant.Color, Material = descendant.Material, Transparency = descendant.Transparency }
+						end
+
+						local v5 = tbl7[descendant]
+
+						if not v5 or not v5.Parent then
+							local highlight = Instance.new("Highlight")
+							highlight.Name = fn(8)
+							highlight.Adornee = descendant
+							highlight.FillColor = real
+							highlight.OutlineColor = Color3.fromRGB(255, 255, 255)
+							highlight.FillTransparency = 0.45
+							highlight.OutlineTransparency = 0
+
+							pcall(function()
+								highlight.Parent = CoreGui
+							end)
+
+							tbl7[descendant] = highlight
+						else
+							v5.FillColor = real
+						end
+
+						pcall(function()
+							descendant.Color = real
+							descendant.Material = Enum.Material.Neon
+						end)
+					end
+
+					if flag2 then
+						if v4 == "fake" or v4 == "delayed" then
+							for _, child in ipairs(descendant:GetChildren()) do
+								if child.ClassName == "TouchTransmitter" or child.ClassName == "TouchInterest" then
+									pcall(function()
+										child:Destroy()
+									end)
+								end
+							end
+
+							descendant.CanCollide = true
+
+							if not tbl9[descendant] or not tbl9[descendant].Parent then
+								local part = Instance.new("Part")
+								part.Name = fn(8)
+								part.Size = Vector3.new(descendant.Size.X, 0.4, descendant.Size.Z)
+								part.CFrame = descendant.CFrame * CFrame.new(0, 0.35, 0)
+								part.Anchored = true
+								part.CanCollide = true
+								part.CanTouch = false
+								part.Transparency = 0.75
+								part.Color = Color3.fromRGB(50, 255, 50)
+								part.Material = Enum.Material.SmoothPlastic
+
+								pcall(function()
+									part.Parent = workspace
+								end)
+
+								tbl9[descendant] = part
+							end
+						end
+					end
+				end
+			end
+		end
+	end
+
+	local function fn16()
+		if thread then
+			return
+		end
+
+		thread = task.spawn(function()
+			while flag or flag2 do
+				if fn4("GlassBridge") or fn10() ~= nil then
+					pcall(fn15)
+				else
+					fn14()
+				end
+
+				task.wait(0.75)
+			end
+
+			fn14()
+			thread = nil
+		end)
+	end
+
+	v2["Glass Bridge"]:Toggle({
+		Title = "Glass Bridge ESP",
+		Callback = function(arg)
+			flag = arg
+
+			if flag then
+				pcall(fn15)
+				fn16()
+			else
+				fn12()
+
+				if not flag2 then
+					fn14()
+				end
+			end
+		end,
+	})
+
+	v2["Glass Bridge"]:Toggle({
+		Title = "Fake Safe Glass",
+		Callback = function(arg)
+			flag2 = arg
+
+			if flag2 then
+				local function fn17(character)
+					task.spawn(function()
+						task.wait(0.5)
+
+						for _, descendant in ipairs(character:GetDescendants()) do
+							if descendant:IsA("BasePart") then
+								pcall(function()
+									descendant.CollisionGroup = "LocalPlayerOnly"
+								end)
+							end
+						end
+					end)
+				end
+
+				if localPlayer.Character then
+					fn17(localPlayer.Character)
+				end
+
+				connection = localPlayer.CharacterAdded:Connect(fn17)
+				pcall(fn15)
+				fn16()
+			else
+				if connection then
+					connection:Disconnect()
+					connection = nil
+				end
+
+				fn13()
+
+				if not flag then
+					fn14()
+				end
+			end
+		end,
+	})
+end
+
+v2["Glass Bridge"]:Button({
+	Title = "TP To Start",
+	Callback = function()
+		local lastGlassTPTime = tbl3.lastGlassTPTime
+
+		if tick() - lastGlassTPTime < 10 then
+			local lastGlassTPTime2 = tbl3.lastGlassTPTime
+			fn5(" Cooldown", "Please wait " .. math.ceil(10 - tick() - lastGlassTPTime2) .. "s before teleporting again.")
+			return
+		end
+
+		if fn4("GlassBridge") then
+			fn3(CFrame.new(36, 521, -1533))
+			tbl3.lastGlassTPTime = tick()
+		else
+			fn5(nil, "Glass Bridge is not currently running.")
+		end
+	end,
+})
+
+v2["Glass Bridge"]:Button({
+	Title = "TP To End",
+	Callback = function()
+		local lastGlassTPTime = tbl3.lastGlassTPTime
+
+		if tick() - lastGlassTPTime < 10 then
+			local lastGlassTPTime2 = tbl3.lastGlassTPTime
+			fn5(" Cooldown", "Please wait " .. math.ceil(10 - tick() - lastGlassTPTime2) .. "s before teleporting again.")
+			return
+		end
+
+		if fn4("GlassBridge") then
+			fn3(CFrame.new(-204, 521, -1536))
+			tbl3.lastGlassTPTime = tick()
+		else
+			fn5(nil, "Glass Bridge is not currently running.")
+		end
+	end,
+})
+
+do
+	local connection = nil
+	local connection2 = nil
+
+	local function fn10(arg)
+		local mingleMap = workspace:FindFirstChild("MingleMap")
+		mingleMap = mingleMap and mingleMap:FindFirstChild("AllMingleDoors")
+		if not mingleMap then
+			return
+		end
+
+		for _, child in pairs(mingleMap:GetChildren()) do
+			local union = child:FindFirstChild("Union")
+
+			if union then
+				union.CanCollide = not arg
+				union.Transparency = arg and 0.4 or 0
+			end
+
+			local doorHandle = child:FindFirstChild("DoorHandle")
+
+			if doorHandle then
+				doorHandle.CanCollide = not arg
+			end
+
+			local doorHandleOtherSide = child:FindFirstChild("DoorHandleOtherSide")
+
+			if doorHandleOtherSide then
+				doorHandleOtherSide.CanCollide = not arg
+			end
+		end
+	end
+
+	v2.Mingle:Toggle({
+		Title = "Noclip Doors",
+		Callback = function(arg)
+			if connection then
+				pcall(function()
+					connection:Disconnect()
+				end)
+
+				connection = nil
+			end
+
+			if connection2 then
+				pcall(function()
+					connection2:Disconnect()
+				end)
+
+				connection2 = nil
+			end
+
+			if arg then
+				if fn4("Mingle") then
+					fn10(true)
+				end
+
+				connection2 = localPlayer.CharacterAdded:Connect(function()
+					task.wait(0.3)
+
+					if fn4("Mingle") then
+						fn10(true)
+					end
+				end)
+
+				local n = 0
+
+				connection = RunService.Heartbeat:Connect(function()
+					if not fn4("Mingle") then
+						return
+					end
+					local now = tick()
+					if now - n < 1 then
+						return
+					end
+					n = now
+					fn10(true)
+				end)
+			else
+				fn10(false)
+			end
+		end,
+	})
+end
+
+do
+	local connection = nil
+	local flag = false
+
+	local function fn10()
+		local character = localPlayer.Character
+		character = character and character:FindFirstChild("HumanoidRootPart")
+		local mingleMap = workspace:FindFirstChild("MingleMap")
+		mingleMap = mingleMap and mingleMap:FindFirstChild("AllMingleDoors")
+		if not character or not mingleMap then
+			return nil
+		end
+		local position = character.Position
+
+		for _, child in pairs(mingleMap:GetChildren()) do
+			local insideRoomRayCheck = child:FindFirstChild("InsideRoomRayCheck")
+
+			if insideRoomRayCheck then
+				local v3 = insideRoomRayCheck.CFrame:PointToObjectSpace(position)
+				if math.abs(v3.X) <= 10 and math.abs(v3.Z) <= 12 and math.abs(v3.Y) <= 10 then
+					return child
+				end
+			end
+		end
+
+		return nil
+	end
+
+	local function fn11(arg)
+		if not arg or flag then
+			return
+		end
+		flag = true
+		local doorHandleOtherSide = arg:FindFirstChild("DoorHandleOtherSide") or arg:FindFirstChild("DoorHandle")
+		local closeDoorPrompt = doorHandleOtherSide and doorHandleOtherSide:FindFirstChild("CloseDoorPrompt")
+
+		if closeDoorPrompt and fireproximityprompt then
+			pcall(function()
+				closeDoorPrompt.HoldDuration = 0
+				closeDoorPrompt.RequiresLineOfSight = false
+				closeDoorPrompt.MaxActivationDistance = 9999
+				fireproximityprompt(closeDoorPrompt, 0)
+			end)
+		end
+
+		local openOrCloseBD = arg:FindFirstChild("OpenOrCloseBD")
+
+		if openOrCloseBD and openOrCloseBD:IsA("BindableEvent") then
+			pcall(function()
+				openOrCloseBD:Fire("Close")
+			end)
+		end
+
+		task.delay(4, function()
+			flag = false
+		end)
+	end
+
+	v2.Mingle:Toggle({
+		Title = "Auto Close Door",
+		Callback = function(arg)
+			if connection then
+				local n = 215298614
+
+				pcall(function()
+					connection:Disconnect()
+				end)
+
+				connection = nil
+			end
+
+			flag = false
+
+			if arg then
+				local n = 0
+
+				connection = RunService.Heartbeat:Connect(function()
+					if not fn4("Mingle") then
+						return
+					end
+					local now = tick()
+					if now - n < 0.2 then
+						return
+					end
+					n = now
+					local playerGui = localPlayer:FindFirstChild("PlayerGui")
+					local otherUIHolder = playerGui and playerGui:FindFirstChild("OtherUIHolder")
+					otherUIHolder = otherUIHolder and otherUIHolder:FindFirstChild("Mingle")
+
+					if otherUIHolder and otherUIHolder.Visible then
+						local playersNeeded = otherUIHolder:FindFirstChild("PlayersNeeded")
+
+						if playersNeeded and playersNeeded.Text ~= "" then
+							if string.find(string.lower(playersNeeded.Text), "safe") then
+								local v3 = fn10()
+
+								if v3 then
+									fn11(v3)
+								end
+							end
+						end
+					end
+				end)
+			end
+		end,
+	})
+end
+
+do
+	local tbl7 = {}
+
+	local function fn10()
+		local playerGui = localPlayer:FindFirstChild("PlayerGui")
+		if not playerGui then
+			return false
+		end
+		local otherUIHolder = playerGui:FindFirstChild("OtherUIHolder")
+		if not otherUIHolder then
+			return false
+		end
+		local mingle = otherUIHolder:FindFirstChild("Mingle")
+		if not mingle then
+			return false
+		end
+		local playersInRoom = mingle:FindFirstChild("PlayersInRoom")
+
+		if playersInRoom and playersInRoom:IsA("TextLabel") then
+			local v3, v4 = string.match(playersInRoom.Text, "(%d+)%/(%d+)")
+			if v3 and v4 then
+				return tonumber(v3) > tonumber(v4)
+			end
+		end
+
+		return false
+	end
+
+	local function fn11(arg)
+		local v3, v4, v5 = pairs(tbl7)
+
+		for _, v6 in v3, v4, v5 do
+			if v6 then
+				v6:Disconnect()
+			end
+		end
+
+		table.clear(tbl7)
+		local humanoid = arg:WaitForChild("Humanoid", 5)
+		if not humanoid then
+			return
+		end
+		local animator = humanoid:WaitForChild("Animator", 5)
+		if not animator then
+			return
+		end
+
+		table.insert(tbl7, animator.AnimationPlayed:Connect(function(arg2)
+			if tbl.antiChokeEnabled and fn4("Mingle") then
+				if string.find(arg2.Animation and arg2.Animation.AnimationId or "", "71318091779666") then
+					if fn10() then
+						local humanoidRootPart = arg:FindFirstChild("HumanoidRootPart")
+
+						if humanoidRootPart then
+							local cFrame = humanoidRootPart.CFrame
+							local flag = false
+							local flag2 = false
+							local connection = nil
+
+							connection = arg2.Stopped:Connect(function()
+								flag = true
+
+								if flag2 and humanoidRootPart then
+									humanoidRootPart.CFrame = cFrame
+									fn5(" Auto Kick", "Choke Finished Teleporting Back")
+								end
+
+								if connection then
+									connection:Disconnect()
+								end
+							end)
+
+							if not flag and humanoidRootPart then
+								flag2 = true
+								humanoidRootPart.CFrame = CFrame.new(199, 54, -88)
+								fn5(" Grab Teleport", "Teleported away from the grab")
+							end
+						end
+					end
+				end
+			end
+		end))
+	end
+
+	v2.Mingle:Toggle({
+		Title = "Grab Teleport",
+		Callback = function(antiChokeEnabled)
+			tbl.antiChokeEnabled = antiChokeEnabled
+
+			if tbl.antiChokeEnabled then
+				if localPlayer.Character then
+					fn11(localPlayer.Character)
+				end
+			else
+				for _, v3 in pairs(tbl7) do
+					if v3 then
+						v3:Disconnect()
+					end
+				end
+
+				table.clear(tbl7)
+			end
+		end,
+	})
+
+	localPlayer.CharacterAdded:Connect(function(character)
+		if tbl.antiChokeEnabled then
+			fn11(character)
+		end
+	end)
+end
+
+local connection = nil
+
+v2.Mingle:Toggle({
+	Title = "Anti Slow",
+	Callback = function(mingleAntiSlowEnabled)
+		tbl.mingleAntiSlowEnabled = mingleAntiSlowEnabled
+
+		if tbl.mingleAntiSlowEnabled then
+			if connection then
+				return
+			end
+			local tbl7 = { "Freeze", "Slowed", "Action", "LightAction", "NoAttack" }
+			local tbl8 = { "Stun", "Freeze", "Slowed", "Action", "Ragdoll" }
+
+			connection = RunService.Heartbeat:Connect(function()
+				if not fn4("Mingle") then
+					return
+				end
+
+				if shared.IsInCutscene then
+					shared.IsInCutscene = nil
+				end
+
+				pcall(function()
+					local playerScripts = localPlayer:FindFirstChild("PlayerScripts")
+
+					if playerScripts then
+						local playerModule = playerScripts:FindFirstChild("PlayerModule")
+
+						if playerModule then
+							local controls = require(playerModule):GetControls()
+
+							if controls and controls.Enable then
+								controls:Enable(true)
+							end
+						end
+					end
+				end)
+
+				local character = localPlayer.Character
+				if not character then
+					return
+				end
+				local humanoid = character:FindFirstChildOfClass("Humanoid")
+				local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
+
+				for _, v3 in ipairs(tbl7) do
+					if character:GetAttribute(v3) ~= nil then
+						character:SetAttribute(v3, nil)
+					end
+
+					if humanoid and humanoid:GetAttribute(v3) ~= nil then
+						humanoid:SetAttribute(v3, nil)
+					end
+				end
+
+				if humanoidRootPart and humanoidRootPart.Anchored then
+					humanoidRootPart.Anchored = false
+				end
+
+				if humanoid then
+					local StarterPlayer = game:GetService("StarterPlayer")
+					local characterWalkSpeed = StarterPlayer.CharacterWalkSpeed
+					local characterJumpPower = StarterPlayer.CharacterJumpPower or 50
+
+					if humanoid.WalkSpeed < characterWalkSpeed then
+						humanoid.WalkSpeed = characterWalkSpeed
+					end
+
+					if humanoid.JumpPower < characterJumpPower then
+						humanoid.JumpPower = characterJumpPower
+					end
+
+					if not fn2() and humanoid.PlatformStand then
+						humanoid.PlatformStand = false
+					end
+				end
+
+				for _, v3 in ipairs(tbl8) do
+					local v4 = character:FindFirstChild(v3)
+
+					if v4 then
+						v4:Destroy()
+					end
+				end
+			end)
+		elseif connection then
+			connection:Disconnect()
+			connection = nil
+		end
+	end,
+})
+
+do
+	local flag = false
+	local tbl7 = {}
+
+	local function fn10()
+		local character = localPlayer.Character
+		character = character and character:FindFirstChild("HumanoidRootPart")
+		if not character then
+			return nil
+		end
+		local huge = math.huge
+		local v3 = nil
+
+		for _, player in pairs(Players:GetPlayers()) do
+			if player ~= localPlayer and player.Character then
+				local humanoidRootPart = player.Character:FindFirstChild("HumanoidRootPart")
+				local humanoid = player.Character:FindFirstChild("Humanoid")
+
+				if humanoidRootPart and humanoid and humanoid.Health > 0 then
+					local magnitude = (humanoidRootPart.Position - character.Position).Magnitude
+
+					if magnitude < huge then
+						huge = magnitude
+						v3 = humanoidRootPart
+					end
+				end
+			end
+		end
+
+		return v3
+	end
+
+	local function fn11()
+		local character = localPlayer.Character
+		if not character then
+			return
+		end
+		local humanoid = character:FindFirstChild("Humanoid")
+		if not humanoid then
+			return
+		end
+		local animator = humanoid:FindFirstChildOfClass("Animator")
+		if not animator then
+			return
+		end
+
+		local connection2 = animator.AnimationPlayed:Connect(function(arg)
+			if not tbl.throwPoleAimEnabled then
+				return
+			end
+
+			if arg.Animation and arg.Animation.AnimationId and string.find(tostring(arg.Animation.AnimationId), "112950478995075") then
+				flag = true
+				local humanoid2 = character:FindFirstChild("Humanoid")
+
+				if humanoid2 then
+					humanoid2.AutoRotate = false
+				end
+
+				arg.Stopped:Once(function()
+					flag = false
+					local humanoid3 = localPlayer.Character and localPlayer.Character:FindFirstChild("Humanoid")
+
+					if humanoid3 then
+						humanoid3.AutoRotate = true
+					end
+				end)
+			end
+		end)
+
+		table.insert(tbl7, connection2)
+	end
+
+	v2["Sky & Squid Game"]:Toggle({
+		Title = "Sky Squid Game Anti Fall",
+		Callback = function(skyAntiFallEnabled)
+			tbl.skyAntiFallEnabled = skyAntiFallEnabled
+
+			if tbl.skyAntiFallEnabled then
+				if tbl2.skyAntiFallThread then
+					return
+				end
+				tbl2.skyAntiFallThread = true
+
+				task.spawn(function()
+					while tbl2.skyAntiFallThread and tbl.skyAntiFallEnabled do
+						if fn4("SkySquidGame") or fn4("SquidGame") then
+							if not workspace:FindFirstChild("SkyAntiFallPlatform") then
+								local vector = Vector3.new(91, 957, 251)
+								local vector2 = Vector3.new(-70, 958, -107)
+								local n = (Vector3.new(91, 957, 251) + Vector3.new(-70, 958, -107)) / 2
+								local n2 = math.abs(vector.X - vector2.X)
+								local n3 = math.abs(vector.Z - vector2.Z)
+								local part = Instance.new("Part")
+								part.Name = fn(8)
+								part.Size = Vector3.new(n2 + 30, 1, n3 + 30)
+								part.Position = Vector3.new(n.X, n.Y + 4, n.Z)
+								part.Anchored = true
+								part.Transparency = 0.5
+								part.Color = Color3.fromRGB(0, 255, 0)
+								part.Material = Enum.Material.ForceField
+								part.Parent = workspace
+							end
+						else
+							local skyAntiFallPlatform = workspace:FindFirstChild("SkyAntiFallPlatform")
+
+							if skyAntiFallPlatform then
+								skyAntiFallPlatform:Destroy()
+							end
+						end
+
+						task.wait(1)
+					end
+
+					local skyAntiFallPlatform = workspace:FindFirstChild("SkyAntiFallPlatform")
+
+					if skyAntiFallPlatform then
+						skyAntiFallPlatform:Destroy()
+					end
+
+					tbl2.skyAntiFallThread = nil
+				end)
+			end
+		end,
+	})
+
+	v2["Sky & Squid Game"]:Toggle({
+		Title = "Anti Freeze While Fight",
+		Callback = function(antiFreezeFightEnabled)
+			tbl.antiFreezeFightEnabled = antiFreezeFightEnabled
+
+			if tbl.antiFreezeFightEnabled then
+				if antiFreezeFightConn then
+					return
+				end
+				local tbl8 = { "Freeze", "Slowed", "Action", "LightAction", "NoAttack" }
+				local tbl9 = { "Stun", "Freeze", "Slowed", "Action", "Ragdoll" }
+
+				antiFreezeFightConn = RunService.Heartbeat:Connect(function()
+					if not (fn4("SkySquidGame") or fn4("SquidGame")) then
+						return
+					end
+
+					if shared.IsInCutscene then
+						shared.IsInCutscene = nil
+					end
+
+					pcall(function()
+						local playerScripts = localPlayer:FindFirstChild("PlayerScripts")
+
+						if playerScripts then
+							local playerModule = playerScripts:FindFirstChild("PlayerModule")
+
+							if playerModule then
+								local controls = require(playerModule):GetControls()
+
+								if controls and controls.Enable then
+									controls:Enable(true)
+								end
+							end
+						end
+					end)
+
+					local character = localPlayer.Character
+					if not character then
+						return
+					end
+					local humanoid = character:FindFirstChildOfClass("Humanoid")
+					local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
+
+					for _, v3 in ipairs(tbl8) do
+						if character:GetAttribute(v3) ~= nil then
+							character:SetAttribute(v3, nil)
+						end
+
+						if humanoid and humanoid:GetAttribute(v3) ~= nil then
+							humanoid:SetAttribute(v3, nil)
+						end
+					end
+
+					if humanoidRootPart and humanoidRootPart.Anchored then
+						humanoidRootPart.Anchored = false
+					end
+
+					if humanoid then
+						local StarterPlayer = game:GetService("StarterPlayer")
+						local characterWalkSpeed = StarterPlayer.CharacterWalkSpeed
+						local characterJumpPower = StarterPlayer.CharacterJumpPower
+
+						if humanoid.WalkSpeed < characterWalkSpeed then
+							humanoid.WalkSpeed = characterWalkSpeed
+						end
+
+						if humanoid.JumpPower < characterJumpPower then
+							humanoid.JumpPower = characterJumpPower
+						end
+
+						if not fn2() and humanoid.PlatformStand then
+							humanoid.PlatformStand = false
+						end
+					end
+
+					for _, v3 in ipairs(tbl9) do
+						local v4 = character:FindFirstChild(v3)
+
+						if v4 then
+							v4:Destroy()
+						end
+					end
+				end)
+			elseif antiFreezeFightConn then
+				antiFreezeFightConn:Disconnect()
+				antiFreezeFightConn = nil
+			end
+		end,
+	})
+
+	v2["Sky & Squid Game"]:Toggle({
+		Title = "Throw Pole AIM",
+		Callback = function(throwPoleAimEnabled)
+			tbl.throwPoleAimEnabled = throwPoleAimEnabled
+
+			if tbl.throwPoleAimEnabled then
+				fn11()
+
+				local connection2 = localPlayer.CharacterAdded:Connect(function()
+					task.wait(0.5)
+
+					if tbl.throwPoleAimEnabled then
+						fn11()
+					end
+				end)
+
+				table.insert(tbl7, connection2)
+
+				local connection3 = RunService.Heartbeat:Connect(function()
+					if not tbl.throwPoleAimEnabled or not flag then
+						return
+					end
+
+					if not (fn4("SkySquidGame") or fn4("SquidGame")) then
+						return
+					end
+					local character = localPlayer.Character
+					local humanoidRootPart = character and character:FindFirstChild("HumanoidRootPart")
+					if not humanoidRootPart then
+						return
+					end
+					local v3 = fn10()
+
+					if v3 then
+						humanoidRootPart.CFrame = CFrame.lookAt(humanoidRootPart.Position, Vector3.new(v3.Position.X, humanoidRootPart.Position.Y, v3.Position.Z))
+					end
+				end)
+
+				table.insert(tbl7, connection3)
+			else
+				flag = false
+
+				for _, v3 in pairs(tbl7) do
+					pcall(function()
+						v3:Disconnect()
+					end)
+				end
+
+				table.clear(tbl7)
+			end
+		end,
+	})
+end
+
+v2["Sky & Squid Game"]:Toggle({
+	Title = "Kill Aura",
+	Callback = function(squidKillAuraEnabled)
+		tbl.squidKillAuraEnabled = squidKillAuraEnabled
+
+		if tbl.squidKillAuraEnabled then
+			if tbl2.squidKillAuraThread then
+				return
+			end
+			tbl2.squidKillAuraThread = true
+
+			task.spawn(function()
+				local tbl7 = { ["96924216250322"] = true, ["116839849594540"] = true, ["123072675259257"] = true }
+
+				while tbl2.squidKillAuraThread and tbl.squidKillAuraEnabled do
+					if fn4("SquidGame") then
+						local character = localPlayer.Character
+
+						if character and character:FindFirstChild("Humanoid") and character:FindFirstChild("HumanoidRootPart") and character.Humanoid.Health > 0 then
+							local humanoidRootPart = character.HumanoidRootPart
+							local fists = localPlayer.Backpack:FindFirstChild("Fists")
+
+							if fists then
+								character.Humanoid:EquipTool(fists)
+							end
+
+							local fists2 = character:FindFirstChild("Fists")
+
+							if fists2 then
+								fists2:Activate()
+							end
+
+							local n = 300
+							local v3 = nil
+
+							for _, player in ipairs(Players:GetPlayers()) do
+								if player ~= localPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") and player.Character:FindFirstChild("Humanoid") and player.Character.Humanoid.Health > 0 then
+									local magnitude = (player.Character.HumanoidRootPart.Position - humanoidRootPart.Position).Magnitude
+
+									if magnitude < n then
+										n = magnitude
+										v3 = player
+									end
+								end
+							end
+
+							if v3 and v3.Character then
+								local character2 = v3.Character
+								local humanoidRootPart2 = character2:FindFirstChild("HumanoidRootPart")
+								local humanoid = character2:FindFirstChild("Humanoid")
+
+								if humanoidRootPart2 and humanoid then
+									local animator = humanoid:FindFirstChildOfClass("Animator")
+									animator = animator and animator:GetPlayingAnimationTracks() or humanoid:GetPlayingAnimationTracks()
+									local flag = false
+
+									for _, v4 in ipairs(animator) do
+										if v4.Animation and v4.Animation.AnimationId then
+											local v5 = string.match(v4.Animation.AnimationId, "%d+")
+
+											if v5 and tbl7[v5] then
+												if v4.Length == 0 or v4.Length - v4.TimePosition > 0.5 then
+													flag = true
+													break
+												end
+											end
+										end
+									end
+
+									if flag then
+										humanoidRootPart.CFrame = humanoidRootPart2.CFrame * CFrame.new(0, -30, 0)
+									else
+										humanoidRootPart.CFrame = humanoidRootPart2.CFrame * CFrame.new(0, 0, 3)
+									end
+								end
+							end
+						end
+
+						RunService.Heartbeat:Wait()
+					else
+						task.wait(1)
+					end
+				end
+
+				tbl2.squidKillAuraThread = nil
+			end)
+		else
+			tbl2.squidKillAuraThread = nil
+		end
+	end,
+})
+
+do
+	local v3 = v:Tab({ Title = "Rebel", Icon = "target" })
+
+	local function fn10()
+		local character = localPlayer.Character
+		local humanoidRootPart = character and character:FindFirstChild("HumanoidRootPart")
+		if not humanoidRootPart then
+			return nil, nil
+		end
+		local currentCamera = workspace.CurrentCamera
+		local vector2 = currentCamera and Vector2.new(currentCamera.ViewportSize.X / 2, currentCamera.ViewportSize.Y / 2)
+		local live = workspace:FindFirstChild("Live")
+		local v4 = nil
+		local huge = math.huge
+		local v5 = nil
+		local huge2 = math.huge
+
+		if live then
+			v4 = nil
+			v5 = nil
+
+			for _, child in pairs(live:GetChildren()) do
+				if child ~= character then
+					if not (child:FindFirstChild("Dead") or child:GetAttribute("Dead") or child:GetAttribute("Eliminated")) then
+						local iFrame = child:FindFirstChild("IFrame")
+						local attribute
+
+						if iFrame then
+							attribute = iFrame
+						else
+							attribute = child:GetAttribute("IFrame")
+						end
+
+						attribute = attribute or child:FindFirstChildOfClass("ForceField")
+
+						if not attribute then
+							if not (child:GetAttribute("Injured") or child:GetAttribute("Downed") or child:FindFirstChild("LocalRagdoll") or child:FindFirstChild("Ragdoll")) then
+								if child.Name:match("Rebel") or child.Name:match("Guard") or child:FindFirstChild("TypeOfGuard") then
+									local humanoidRootPart2 = child:FindFirstChild("HumanoidRootPart")
+									local humanoid = child:FindFirstChild("Humanoid")
+
+									if humanoidRootPart2 and humanoid and humanoid:IsA("Humanoid") and humanoid.Health > 0 then
+										local magnitude = (humanoidRootPart.Position - humanoidRootPart2.Position).Magnitude
+
+										if magnitude <= 1200 then
+											if currentCamera and vector2 then
+												local v6, v7 = currentCamera:WorldToViewportPoint(humanoidRootPart2.Position)
+
+												if v7 and v6.Z > 0 then
+													local magnitude2 = (Vector2.new(v6.X, v6.Y) - vector2).Magnitude
+
+													if magnitude2 < huge then
+														huge = magnitude2
+														v4 = child
+													end
+												elseif not v4 and magnitude < huge2 then
+													huge2 = magnitude
+													v5 = child
+												end
+											elseif magnitude < huge2 then
+												huge2 = magnitude
+												v5 = child
+											end
+										end
+									end
+								end
+							end
+						end
+					end
+				end
+			end
+		end
+
+		for _, player in ipairs(Players:GetPlayers()) do
+			if player ~= localPlayer and player:GetAttribute("IsGuard") == true then
+				local character2 = player.Character
+
+				if character2 and character2 ~= character then
+					if not (character2:FindFirstChild("Dead") or character2:GetAttribute("Dead") or character2:GetAttribute("Eliminated")) then
+						if not (character2:FindFirstChild("IFrame") or character2:GetAttribute("IFrame") or character2:FindFirstChildOfClass("ForceField")) then
+							if not (character2:GetAttribute("Injured") or character2:GetAttribute("Downed") or character2:FindFirstChild("LocalRagdoll") or character2:FindFirstChild("Ragdoll")) then
+								local humanoidRootPart2 = character2:FindFirstChild("HumanoidRootPart")
+								local humanoid = character2:FindFirstChild("Humanoid")
+
+								if humanoidRootPart2 and humanoid and humanoid:IsA("Humanoid") and humanoid.Health > 0 then
+									local magnitude = (humanoidRootPart.Position - humanoidRootPart2.Position).Magnitude
+
+									if magnitude <= 1200 then
+										if currentCamera and vector2 then
+											local v6, v7 = currentCamera:WorldToViewportPoint(humanoidRootPart2.Position)
+
+											if v7 and v6.Z > 0 then
+												local magnitude2 = (Vector2.new(v6.X, v6.Y) - vector2).Magnitude
+
+												if magnitude2 < huge then
+													huge = magnitude2
+													v4 = character2
+												end
+											elseif not v4 and magnitude < huge2 then
+												huge2 = magnitude
+												v5 = character2
+											end
+										elseif magnitude < huge2 then
+											huge2 = magnitude
+											v5 = character2
+										end
+									end
+								end
+							end
+						end
+					end
+				end
+			end
+		end
+
+		v4 = v4 or v5
+		return v4, v4 and v4:FindFirstChild("HumanoidRootPart")
+	end
+
+	local function fn11()
+		local character = localPlayer.Character
+		if not character then
+			return nil
+		end
+		local tool = character:FindFirstChildOfClass("Tool")
+		if tool and (tool:FindFirstChild("GunScript") or tool:FindFirstChild("Client") or tool.Name == "MP5" or tool.Name == "Revolver") then
+			return tool
+		end
+		local backpack = localPlayer:FindFirstChild("Backpack")
+
+		if backpack then
+			for _, child in pairs(backpack:GetChildren()) do
+				if child.Name == "MP5" or child.Name == "Revolver" or child:FindFirstChild("GunScript") then
+					child.Parent = character
+					task.wait(0.1)
+					return child
+				end
+			end
+		end
+
+		return nil
+	end
+
+	v3:Toggle({
+		Title = "Auto Shoot",
+		Locked = true,
+		Default = false,
+		Callback = function(autoShootEnabled)
+			tbl.autoShootEnabled = autoShootEnabled
+
+			if tbl.autoShootEnabled then
+				if tbl2.autoShootThread then
+					return
+				end
+				tbl2.autoShootThread = true
+
+				task.spawn(function()
+					while tbl.autoShootEnabled and tbl2.autoShootThread do
+						local v4 = fn11()
+
+						if v4 then
+							local v5, v6 = fn10()
+
+							if v5 and v6 then
+								local tbl7 = { v4 }
+
+								tbl7[2] = {
+									ClientRayNormal = Vector3.new(0.707164, 0, -0.707049),
+									FiredGun = true,
+									bulletCF = CFrame.new(-221, 191, 269, 0.108, 0.141, 0.983, 0, 0.989, -0.142, -0.994, 0.015, 0.107),
+									ClientRayInstance = v6,
+									SecondaryHitTargets = {},
+									ClientRayPosition = v6.Position,
+									HitTargets = { [v5.Name] = "Head" },
+									bulletSizeC = Vector3.new(0.01, 0.01, 48.3),
+									NoMuzzleFX = false,
+									FirePosition = v6.Position + Vector3.new(0, 1, 0),
+								}
+
+								pcall(function()
+									ReplicatedStorage.Remotes.FiredGunClient:FireServer(unpack(tbl7))
+									task.wait(0.05)
+									ReplicatedStorage.Remotes.FiredGunClient:FireServer(v4, { ReloadingGun = true })
+								end)
+							end
+						end
+
+						task.wait(0.15)
+					end
+
+					tbl2.autoShootThread = nil
+				end)
+			end
+		end,
+	})
+
+	local function fn12(arg)
+		if not arg or not arg.Parent or not arg:IsDescendantOf(workspace) then
+			return false
+		end
+
+		if arg:FindFirstChild("Dead") or arg:GetAttribute("Dead") == true or arg:GetAttribute("Eliminated") == true then
+			return false
+		end
+
+		if arg:FindFirstChild("IFrame") or arg:GetAttribute("IFrame") == true or arg:FindFirstChildOfClass("ForceField") or arg:FindFirstChild("Invulnerable") then
+			return false
+		end
+
+		if arg:GetAttribute("Injured") == true or arg:GetAttribute("Downed") == true or arg:FindFirstChild("LocalRagdoll") or arg:FindFirstChild("Ragdoll") then
+			return false
+		end
+
+		if arg:GetAttribute("GaveRewardsTo" .. localPlayer.Name) == true then
+			return false
+		end
+		local humanoid = arg:FindFirstChild("Humanoid")
+		if not humanoid or not humanoid:IsA("Humanoid") or humanoid.Health <= 0 then
+			return false
+		end
+		local humanoidRootPart = arg:FindFirstChild("HumanoidRootPart")
+		if not humanoidRootPart then
+			return false
+		end
+		local guardCanKillLockOn = humanoidRootPart:FindFirstChild("GuardCanKillLockOn") or arg:FindFirstChild("GuardCanKillLockOn")
+		if not guardCanKillLockOn or not guardCanKillLockOn:IsA("BillboardGui") then
+			return false
+		end
+
+		if guardCanKillLockOn.Enabled == false or not guardCanKillLockOn.Parent or not guardCanKillLockOn:IsDescendantOf(workspace) then
+			return false
+		end
+		local n = 0
+		local flag = false
+
+		for _, descendant in ipairs(guardCanKillLockOn:GetDescendants()) do
+			if descendant:IsA("ImageLabel") then
+				n += 1
+				if descendant.Visible and descendant.ImageTransparency < 0.95 and descendant.Image ~= "" then
+					flag = true
+					break
+				end
+			elseif descendant:IsA("TextLabel") then
+				n += 1
+				if descendant.Visible and descendant.TextTransparency < 0.95 and descendant.Text ~= "" then
+					flag = true
+					break
+				end
+			elseif descendant:IsA("Frame") then
+				n += 1
+				if descendant.Visible and descendant.BackgroundTransparency < 0.95 then
+					flag = true
+					break
+				end
+			end
+		end
+
+		if n > 0 and not flag then
+			return false
+		end
+		return true
+	end
+
+	local flag = false
+
+	local function fn13()
+		if flag then
+			return
+		end
+		flag = true
+
+		pcall(function()
+			local v4 = require
+			local v5 = table.pack(ReplicatedStorage:WaitForChild("Modules"):WaitForChild("GunFunctions"))
+			local v6 = v4(table.unpack(v5, 1, v5.n))
+			local firedGun = v6.FiredGun
+
+			v6.FiredGun = function(arg, arg2, arg3, ...)
+				if not tbl.silentAimEnabled or arg ~= localPlayer.Character then
+					return firedGun(arg, arg2, arg3, ...)
+				end
+				arg3 = arg3 or {}
+				local humanoidRootPart = arg and arg:FindFirstChild("HumanoidRootPart")
+				if not humanoidRootPart then
+					return firedGun(arg, arg2, arg3, ...)
+				end
+				local position = humanoidRootPart.Position
+
+				pcall(function()
+					local attribute = arg:GetAttribute("HoldingWeapon")
+
+					if attribute then
+						local v7 = arg:FindFirstChild(attribute)
+
+						if v7 then
+							local fireFrom = v7:FindFirstChild("FireFrom")
+
+							if fireFrom then
+								position = fireFrom.Position
+							end
+						end
+					end
+				end)
+
+				local currentCamera = workspace.CurrentCamera
+				local viewportSize = currentCamera and currentCamera.ViewportSize
+
+				if not viewportSize then
+					viewportSize = Vector2.new(1920, 1080)
+				end
+
+				local vector2 = Vector2.new(viewportSize.X / 2, viewportSize.Y / 2)
+				local flag2 = localPlayer:GetAttribute("IsGuard") == true or localPlayer.Character and (localPlayer.Character:FindFirstChild("TypeOfGuard") ~= nil or localPlayer.Character:GetAttribute("TypeOfGuard") ~= nil)
+				local live = workspace:FindFirstChild("Live")
+				local v7 = nil
+				local v8 = nil
+
+				if live then
+					local huge = math.huge
+					v7 = nil
+					local huge2 = math.huge
+					v8 = nil
+
+					for _, child in pairs(live:GetChildren()) do
+						if child ~= arg then
+							local humanoid = child:FindFirstChild("Humanoid")
+
+							if not (not humanoid or not humanoid:IsA("Humanoid") or humanoid.Health <= 0) then
+								local head = child:FindFirstChild("Head") or child:FindFirstChild("HumanoidRootPart") or child:FindFirstChildWhichIsA("BasePart", true)
+
+								if head then
+									local flag3
+
+									if child:FindFirstChild("Enemy") or string.match(string.lower(child.Name), "peabert") then
+										flag3 = true
+									elseif flag2 then
+										flag3 = fn12(child)
+									else
+										local playerFromCharacter = Players:GetPlayerFromCharacter(child)
+										local attribute = playerFromCharacter and playerFromCharacter ~= localPlayer and playerFromCharacter:GetAttribute("IsGuard") or child.Name:match("Rebel") or child.Name:match("Guard") or child:FindFirstChild("PlayerCanKill") or child:FindFirstChild("TypeOfGuard")
+										flag3 = false
+
+										if attribute then
+											flag3 = true
+										end
+									end
+
+									if flag3 then
+										local magnitude = (head.Position - humanoidRootPart.Position).Magnitude
+
+										if not (magnitude > 1200) then
+											if currentCamera then
+												local v9, v10 = currentCamera:WorldToViewportPoint(head.Position)
+
+												if v10 and v9.Z > 0 then
+													local magnitude2 = (Vector2.new(v9.X, v9.Y) - vector2).Magnitude
+
+													if magnitude2 < huge then
+														huge = magnitude2
+														v7 = head
+													end
+												elseif not v7 and magnitude < huge2 then
+													huge2 = magnitude
+													v8 = head
+												end
+											elseif magnitude < huge2 then
+												huge2 = magnitude
+												v8 = head
+											end
+										end
+									end
+								end
+							end
+						end
+					end
+				end
+
+				v7 = v7 or v8
+
+				if v7 then
+					arg2 = v7.Position
+					arg3.CustomFireFrom = true
+					arg3.spread = 0
+				end
+
+				return firedGun(arg, arg2, arg3, ...)
+			end
+		end)
+	end
+
+	v3:Toggle({
+		Title = "Silent Aim",
+		Default = false,
+		Callback = function(silentAimEnabled)
+			tbl.silentAimEnabled = silentAimEnabled
+
+			if silentAimEnabled then
+				fn13()
+			end
+		end,
+	})
+
+	local flag2 = false
+	local getBuffs = nil
+
+	local function fn14()
+		if flag2 then
+			return
+		end
+		flag2 = true
+
+		pcall(function()
+			local modules = ReplicatedStorage:FindFirstChild("Modules")
+			modules = modules and modules:FindFirstChild("GunFunctions")
+
+			if modules then
+				local module = require(modules)
+
+				if module and module.GetBuffs then
+					getBuffs = module.GetBuffs
+
+					module.GetBuffs = function(...)
+						local tbl7 = getBuffs(...)
+
+						if type(tbl7) ~= "table" then
+							tbl7 = {}
+						end
+
+						local tbl8 = {}
+
+						for k, v4 in pairs(tbl7) do
+							tbl8[k] = v4
+						end
+
+						if tbl.noRecoilSpreadEnabled then
+							tbl8.RecoilDiv = 999999
+						end
+
+						if tbl.rapidFireEnabled then
+							tbl8.FireRateMult = 9999
+						end
+
+						return tbl8
+					end
+				end
+			end
+		end)
+	end
+
+	v3:Toggle({
+		Title = "No Recoil & Spread",
+		Default = false,
+		Callback = function(noRecoilSpreadEnabled)
+			tbl.noRecoilSpreadEnabled = noRecoilSpreadEnabled
+
+			if noRecoilSpreadEnabled then
+				fn14()
+			end
+		end,
+	})
+
+	v3:Toggle({
+		Title = "Rapid Fire",
+		Default = false,
+		Callback = function(rapidFireEnabled)
+			tbl.rapidFireEnabled = rapidFireEnabled
+
+			if rapidFireEnabled then
+				fn14()
+			end
+		end,
+	})
+
+	local connection2 = nil
+
+	v3:Toggle({
+		Title = "Infinite Ammo",
+		Default = false,
+		Callback = function(infiniteAmmoRebelEnabled)
+			tbl.infiniteAmmoRebelEnabled = infiniteAmmoRebelEnabled
+
+			if infiniteAmmoRebelEnabled then
+				if not connection2 then
+					connection2 = RunService.RenderStepped:Connect(function()
+						if not tbl.infiniteAmmoRebelEnabled then
+							return
+						end
+
+						pcall(function()
+							local character = localPlayer.Character
+							if not character then
+								return
+							end
+							local tool = character:FindFirstChildOfClass("Tool")
+
+							if tool then
+								local infoClient = tool:FindFirstChild("InfoClient") or tool:FindFirstChild("Info")
+
+								if infoClient then
+									local bullets = infoClient:FindFirstChild("Bullets")
+									local maxBullets = tool:FindFirstChild("MaxBullets") or tool:FindFirstChild("MagSize")
+
+									if bullets then
+										maxBullets = maxBullets and maxBullets.Value or 999
+
+										if bullets.Value < maxBullets then
+											bullets.Value = maxBullets
+										end
+									end
+								end
+							end
+						end)
+					end)
+				end
+			elseif connection2 then
+				pcall(function()
+					connection2:Disconnect()
+				end)
+
+				connection2 = nil
+			end
+		end,
+	})
+
+	local v4 = v:Tab({ Title = "Guard Mode", Icon = "shield" })
+
+	v4:Button({
+		Title = "Free Perm Guard",
+		Callback = function()
+			localPlayer:SetAttribute("__OwnsPermGuard", true)
+			fn5("Guard", "Free Perm Guard Activated")
+		end,
+	})
+
+	v4:Dropdown({
+		Title = "Choose Guard Type",
+		Values = { "Circle", "Triangle", "Square" },
+		Default = "Circle",
+		Callback = function(selectedGuardType)
+			local flag3 = not selectedGuardType
+			local flag4
+
+			if flag3 then
+				flag4 = flag3
+			else
+				flag4 = type(selectedGuardType) ~= "string"
+			end
+
+			if flag4 then
+				return
+			end
+			tbl.selectedGuardType = selectedGuardType
+		end,
+	})
+
+	v4:Button({
+		Title = "Be Guard",
+		Callback = function()
+			local selectedGuardType = tbl.selectedGuardType or "Circle"
+
+			pcall(function()
+				localPlayer:SetAttribute("__OwnsPermGuard", true)
+				localPlayer:SetAttribute("GuardSelection", selectedGuardType)
+				localPlayer:SetAttribute("GuardType", selectedGuardType)
+				tbl5.Fire("PlayableGuardRemote", { GuardSelection = selectedGuardType, SelectGuard = selectedGuardType, ChooseGuard = selectedGuardType })
+			end)
+
+			fn5("Guard", "Applied Guard: " .. tostring(selectedGuardType))
+		end,
+	})
+
+	v4:Toggle({
+		Title = "Auto Shoot",
+		Patched = true,
+		Locked = true,
+		Default = false,
+		Callback = function(autoKillRedArrowEnabled)
+			tbl.autoKillRedArrowEnabled = autoKillRedArrowEnabled
+
+			if tbl.autoKillRedArrowEnabled then
+				fn7()
+				if tbl2.autoKillRedArrowThread then
+					return
+				end
+				tbl2.autoKillRedArrowThread = true
+
+				task.spawn(function()
+					while tbl.autoKillRedArrowEnabled and tbl2.autoKillRedArrowThread do
+						local live = workspace:FindFirstChild("Live")
+						local v5 = fn8()
+						local character = localPlayer.Character
+						local humanoidRootPart = character and character:FindFirstChild("HumanoidRootPart")
+						local currentCamera = workspace.CurrentCamera
+						local vector2 = currentCamera and Vector2.new(currentCamera.ViewportSize.X / 2, currentCamera.ViewportSize.Y / 2)
+
+						if live and v5 and humanoidRootPart then
+							fn9(v5)
+							local huge = math.huge
+							local tbl7 = nil
+							local huge2 = math.huge
+							local tbl8 = nil
+
+							for _, child in ipairs(live:GetChildren()) do
+								if child:IsA("Model") and child ~= character then
+									if fn12(child) then
+										local humanoidRootPart2 = child:FindFirstChild("HumanoidRootPart")
+										local head = child:FindFirstChild("Head") or humanoidRootPart2
+
+										if not (not humanoidRootPart2 or not head) then
+											local magnitude = (humanoidRootPart2.Position - humanoidRootPart.Position).Magnitude
+
+											if magnitude <= 1200 then
+												if currentCamera and vector2 then
+													local v6, v7 = currentCamera:WorldToViewportPoint(head.Position)
+
+													if v7 and v6.Z > 0 then
+														local magnitude2 = (Vector2.new(v6.X, v6.Y) - vector2).Magnitude
+
+														if magnitude2 < huge then
+															tbl7 = { char = child, hrp = humanoidRootPart2, hitPart = head }
+															huge = magnitude2
+														end
+													elseif not tbl7 and magnitude < huge2 then
+														tbl8 = { char = child, hrp = humanoidRootPart2, hitPart = head }
+														huge2 = magnitude
+													end
+												elseif magnitude < huge2 then
+													tbl8 = { char = child, hrp = humanoidRootPart2, hitPart = head }
+													huge2 = magnitude
+												end
+											end
+										end
+									end
+								end
+							end
+
+							tbl8 = tbl7 or tbl8
+
+							if tbl8 then
+								local char = tbl8.char
+								local hrp = tbl8.hrp
+								local str = "Unknown"
+
+								for _, player in pairs(Players:GetPlayers()) do
+									if player.Character == char then
+										str = player.Name
+										break
+									end
+								end
+
+								local tbl9 = { v5 }
+
+								tbl9[2] = {
+									ClientRayNormal = Vector3.new(0.707164, 0, -0.707049),
+									FiredGun = true,
+									bulletCF = CFrame.new(-221, 191, 269, 0.108, 0.141, 0.983, 0, 0.989, -0.142, -0.994, 0.015, 0.107),
+									ClientRayInstance = hrp,
+									SecondaryHitTargets = {},
+									ClientRayPosition = hrp.Position,
+									HitTargets = { [str] = "Head" },
+									bulletSizeC = Vector3.new(0.01, 0.01, 48.3),
+									NoMuzzleFX = false,
+									FirePosition = humanoidRootPart.Position + Vector3.new(0, 1.5, 0),
+								}
+
+								pcall(function()
+									local remotes = ReplicatedStorage:FindFirstChild("Remotes")
+									remotes = remotes and remotes:FindFirstChild("FiredGunClient")
+
+									if remotes then
+										remotes:FireServer(unpack(tbl9))
+									end
+								end)
+
+								fn9(v5)
+							end
+						end
+
+						task.wait(1)
+					end
+
+					tbl2.autoKillRedArrowThread = nil
+				end)
+			else
+				tbl2.autoKillRedArrowThread = nil
+			end
+		end,
+	})
+
+	v4:Toggle({
+		Title = "Silent Aim",
+		Default = false,
+		Callback = function(silentAimEnabled)
+			tbl.silentAimEnabled = silentAimEnabled
+
+			if silentAimEnabled then
+				fn13()
+			end
+		end,
+	})
+
+	local connection3 = nil
+
+	local flag4 = false
+	local start = nil
+	local strengthTester = nil
+
+	local function fn19()
+		if flag4 then
+			return
+		end
+		flag4 = true
+
+		pcall(function()
+			local modules = ReplicatedStorage:WaitForChild("Modules", 5)
+			modules = modules and modules:WaitForChild("Effects", 5)
+
+			if modules then
+				local module = require(modules)
+
+				if module and module.StrengthTester then
+					strengthTester = module.StrengthTester
+
+					module.StrengthTester = function(arg, ...)
+						if tbl.instantBoxMachineEnabled and arg then
+							task.defer(function()
+								pcall(function()
+									if arg and arg.ResultRemote then
+										arg.ResultRemote:FireServer({ PowerLevel = 5, Percent = 100, QteSuccess = true, EarlyExit = false })
+									end
+								end)
+
+								local playerGui = localPlayer:FindFirstChild("PlayerGui")
+								local strengthTest = playerGui and playerGui:FindFirstChild("StrengthTest")
+
+								if strengthTest then
+									strengthTest.Enabled = false
+									local n = 99964579
+
+									pcall(function()
+										strengthTest:Destroy()
+									end)
+								end
+							end)
+						end
+
+						return strengthTester(arg, ...)
+					end
+				end
+			end
+		end)
+
+		pcall(function()
+			local modules = ReplicatedStorage:WaitForChild("Modules", 5)
+			local strengthTester2 = modules and modules:WaitForChild("StrengthTester", 5)
+
+			if strengthTester2 then
+				local module = require(strengthTester2)
+
+				if module and module.Start then
+					start = module.Start
+
+					module.Start = function(arg, ...)
+						local v5 = start(arg, ...)
+
+						if tbl.instantBoxMachineEnabled and arg then
+							task.defer(function()
+								if arg and arg.SpinComplete and arg.SpinComplete.Parent then
+									arg.SpinComplete:Fire({ PowerLevel = arg.MaxProgress or 5, Percent = 100, QteSuccess = true, EarlyExit = false })
+								end
+
+								local playerGui = localPlayer:FindFirstChild("PlayerGui")
+								local strengthTest = playerGui and playerGui:FindFirstChild("StrengthTest")
+
+								if strengthTest then
+									strengthTest.Enabled = false
+
+									pcall(function()
+										strengthTest:Destroy()
+									end)
+								end
+							end)
+						end
+
+						return v5
+					end
+				end
+			end
+		end)
+
+		pcall(function()
+			local function fn20(child)
+				if tbl.instantBoxMachineEnabled and child and child.Name == "StrengthTest" then
+					child.Enabled = false
+
+					task.defer(function()
+						if child and child.Parent then
+							pcall(function()
+								child:Destroy()
+							end)
+						end
+					end)
+				end
+			end
+
+			local playerGui = localPlayer:FindFirstChild("PlayerGui")
+
+			if playerGui then
+				playerGui.ChildAdded:Connect(fn20)
+
+				for _, child in ipairs(playerGui:GetChildren()) do
+					fn20(child)
+				end
+			end
+
+			localPlayer.ChildAdded:Connect(function(child)
+				if child.Name == "PlayerGui" then
+					child.ChildAdded:Connect(fn20)
+
+					for _, child2 in ipairs(child:GetChildren()) do
+						fn20(child2)
+					end
+				end
+			end)
+		end)
+	end
+
+	v4:Toggle({
+		Title = "Instant Box Machine",
+		Default = false,
+		Callback = function(instantBoxMachineEnabled)
+			tbl.instantBoxMachineEnabled = instantBoxMachineEnabled
+
+			if instantBoxMachineEnabled then
+				fn19()
+			end
+		end,
+	})
+end
+
+do
+	local v3 = v:Tab({ Title = "Combat", Icon = "swords" })
+	local v4 = nil
+	local connection2 = nil
+	local str = "112693580156198"
+	local n = 0
+
+	local function fn10(arg)
+		local n2 = 231873189
+
+		pcall(function()
+			if v4 then
+				v4:Stop(0)
+				v4:AdjustWeight(0)
+				v4:Destroy()
+				v4 = nil
+			end
+		end)
+
+		if not arg then
+			return
+		end
+		local animator = arg:FindFirstChildOfClass("Animator")
+
+		if animator then
+			pcall(function()
+				for _, v5 in ipairs(animator:GetPlayingAnimationTracks()) do
+					if tostring(v5.Animation and v5.Animation.AnimationId or ""):find("112693580156198") then
+						v5:Stop(0)
+						v5:AdjustWeight(0)
+						v5:Destroy()
+					end
+				end
+			end)
+		end
+	end
+
+	local function fn11(arg)
+		if not arg or arg.Health <= 0 then
+			return
+		end
+		local animator = arg:FindFirstChildOfClass("Animator")
+		if not animator then
+			return
+		end
+
+		pcall(function()
+			if not v4 or v4.Parent ~= animator then
+				local animation = Instance.new("Animation")
+				animation.AnimationId = "rbxassetid://" .. str
+				v4 = animator:LoadAnimation(animation)
+				v4.Priority = Enum.AnimationPriority.Core
+				v4.Looped = true
+			end
+
+			if not v4.IsPlaying and n == 0 then
+				v4:Play(0.15)
+				v4.Looped = true
+			end
+		end)
+	end
+
+	local fn12 = nil
+
+	fn12 = function(arg)
+		if arg then
+			if tbl4.Enabled then
+				return
+			end
+			tbl4.Enabled = true
+			n = 0
+			local character = localPlayer.Character
+			if not character then
+				return
+			end
+			local humanoid = character:FindFirstChildOfClass("Humanoid")
+			local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
+			if not (humanoid and humanoidRootPart) then
+				return
+			end
+			humanoid.UseJumpPower = false
+			humanoid.AutoRotate = false
+			humanoid.PlatformStand = true
+
+			if tbl4.BodyVelocity then
+				pcall(function()
+					tbl4.BodyVelocity:Destroy()
+				end)
+
+				tbl4.BodyVelocity = nil
+			end
+
+			local bodyVelocity = Instance.new("BodyVelocity")
+			bodyVelocity.Name = fn(8)
+			bodyVelocity.MaxForce = Vector3.new(40000, 40000, 40000)
+			bodyVelocity.Velocity = Vector3.zero
+			bodyVelocity.Parent = humanoidRootPart
+			tbl4.BodyVelocity = bodyVelocity
+			local animator = humanoid:FindFirstChildOfClass("Animator")
+
+			if animator then
+				fn11(humanoid)
+
+				if connection2 then
+					pcall(function()
+						connection2:Disconnect()
+					end)
+
+					connection2 = nil
+				end
+
+				connection2 = animator.AnimationPlayed:Connect(function(arg2)
+					if not tbl4.Enabled then
+						return
+					end
+
+					if not tostring(arg2.Animation and arg2.Animation.AnimationId or ""):find("112693580156198") then
+						n += 1
+
+						if v4 and v4.IsPlaying then
+							pcall(function()
+								v4:Stop(0.05)
+							end)
+						end
+
+						local connection3 = nil
+
+						connection3 = arg2.Stopped:Connect(function()
+							if connection3 then
+								pcall(function()
+									connection3:Disconnect()
+								end)
+							end
+
+							n = math.max(0, n - 1)
+
+							if tbl4.Enabled and n == 0 and humanoid and humanoid.Health > 0 then
+								fn11(humanoid)
+							end
+						end)
+					end
+				end)
+			end
+
+			tbl4.Connection = RunService.Heartbeat:Connect(function()
+				if not tbl4.Enabled or not character or not character.Parent then
+					fn12(false)
+					return
+				end
+				humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
+				humanoid = character:FindFirstChildOfClass("Humanoid")
+				if not humanoidRootPart or not bodyVelocity or not humanoid or humanoid.Health <= 0 then
+					fn12(false)
+					return
+				end
+				local currentCamera = workspace.CurrentCamera
+				if not currentCamera then
+					return
+				end
+				local cFrame = currentCamera.CFrame
+				local lookVector = cFrame.LookVector
+				local rightVector = cFrame.RightVector
+				local upVector = cFrame.UpVector
+				local flag = false
+				local vector = Vector3.zero
+
+				if UserInputService:IsKeyDown(Enum.KeyCode.W) then
+					vector = Vector3.zero + lookVector
+					flag = true
+				end
+
+				if UserInputService:IsKeyDown(Enum.KeyCode.S) then
+					vector -= lookVector
+					flag = true
+				end
+
+				if UserInputService:IsKeyDown(Enum.KeyCode.A) then
+					vector -= rightVector
+					flag = true
+				end
+
+				if UserInputService:IsKeyDown(Enum.KeyCode.D) then
+					vector += rightVector
+					flag = true
+				end
+
+				if UserInputService:IsKeyDown(Enum.KeyCode.Space) then
+					vector += upVector
+					flag = true
+				end
+
+				if not flag then
+					local moveDirection = humanoid.MoveDirection
+
+					if moveDirection.Magnitude > 0.1 then
+						vector = lookVector * moveDirection.Z + rightVector * moveDirection.X + upVector * moveDirection.Y
+						flag = true
+					end
+				end
+
+				if flag and vector.Magnitude > 0 then
+					bodyVelocity.Velocity = vector.Unit * tbl4.Speed
+				else
+					bodyVelocity.Velocity = Vector3.zero
+				end
+			end)
+		else
+			if not tbl4.Enabled then
+				return
+			end
+			tbl4.Enabled = false
+			n = 0
+
+			if tbl4.Connection then
+				pcall(function()
+					tbl4.Connection:Disconnect()
+				end)
+
+				tbl4.Connection = nil
+			end
+
+			if connection2 then
+				pcall(function()
+					connection2:Disconnect()
+				end)
+
+				connection2 = nil
+			end
+
+			if tbl4.BodyVelocity then
+				pcall(function()
+					tbl4.BodyVelocity:Destroy()
+				end)
+
+				tbl4.BodyVelocity = nil
+			end
+
+			local character = localPlayer.Character
+
+			if character then
+				local humanoid = character:FindFirstChildOfClass("Humanoid")
+
+				if humanoid then
+					fn10(humanoid)
+
+					pcall(function()
+						humanoid.UseJumpPower = true
+						humanoid.AutoRotate = true
+						humanoid.PlatformStand = false
+						humanoid:ChangeState(Enum.HumanoidStateType.GettingUp)
+					end)
+
+					task.defer(function()
+						pcall(function()
+							if humanoid and humanoid.Health > 0 then
+								humanoid:ChangeState(Enum.HumanoidStateType.Running)
+							end
+						end)
+					end)
+				end
+
+				local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
+
+				if humanoidRootPart then
+					local n2 = 59540082
+
+					pcall(function()
+						humanoidRootPart.AssemblyLinearVelocity = Vector3.zero
+					end)
+				end
+			end
+		end
+	end
+
+	v3:Keybind({
+		Title = "Fly Keybind",
+		Default = Enum.KeyCode.F,
+		Callback = function()
+			fn12(not tbl4.Enabled)
+		end,
+	})
+
+	v3:Toggle({
+		Title = "Fly",
+		Callback = function(arg)
+			fn12(arg)
+		end,
+	})
+
+	local tbl7 = { "Freeze", "Slowed", "Action", "LightAction", "NoAttack" }
+	local tbl8 = { "Stun", "Freeze", "Slowed", "Action", "LightAction", "Ragdoll", "NoAttack" }
+	local connection3 = nil
+	local flag = false
+
+	v3:Toggle({
+		Title = "Anti Slow",
+		Callback = function(arg)
+			flag = arg
+
+			if arg then
+				if connection3 then
+					return
+				end
+
+				connection3 = RunService.Heartbeat:Connect(function()
+					if not flag then
+						return
+					end
+
+					pcall(function()
+						if shared then
+							shared.WalkSpeedChangeTick = nil
+
+							if shared.IsInCutscene then
+								shared.IsInCutscene = nil
+							end
+						end
+
+						local playerScripts = localPlayer:FindFirstChild("PlayerScripts")
+
+						if playerScripts then
+							local playerModule = playerScripts:FindFirstChild("PlayerModule")
+
+							if playerModule then
+								local controls = require(playerModule):GetControls()
+
+								if controls and controls.Enable then
+									controls:Enable(true)
+								end
+							end
+						end
+
+						local character = localPlayer.Character
+						if not character then
+							return
+						end
+						local humanoid = character:FindFirstChildOfClass("Humanoid")
+
+						for _, v5 in ipairs(tbl7) do
+							if character:GetAttribute(v5) ~= nil then
+								character:SetAttribute(v5, nil)
+							end
+
+							if humanoid and humanoid:GetAttribute(v5) ~= nil then
+								humanoid:SetAttribute(v5, nil)
+							end
+						end
+
+						if humanoid then
+							local StarterPlayer = game:GetService("StarterPlayer")
+							local characterWalkSpeed = StarterPlayer.CharacterWalkSpeed or 16
+							local characterJumpPower = StarterPlayer.CharacterJumpPower or 50
+
+							if humanoid.WalkSpeed < characterWalkSpeed then
+								humanoid.WalkSpeed = characterWalkSpeed
+							end
+
+							if humanoid.JumpPower < characterJumpPower then
+								humanoid.JumpPower = characterJumpPower
+							end
+
+							if not fn2() and humanoid.PlatformStand then
+								humanoid.PlatformStand = false
+							end
+						end
+
+						for _, v5 in ipairs(tbl8) do
+							local v6 = character:FindFirstChild(v5)
+
+							if v6 then
+								v6:Destroy()
+							end
+						end
+					end)
+				end)
+			elseif connection3 then
+				local n2 = 105513500
+
+				pcall(function()
+					connection3:Disconnect()
+				end)
+
+				connection3 = nil
+			end
+		end,
+	})
+
+	local v5 = nil
+
+	local function fn13()
+		local character = localPlayer.Character
+		character = character and character:FindFirstChild("HumanoidRootPart")
+		if not character then
+			return nil
+		end
+		local n2 = 150
+		local v6 = nil
+
+		for _, player in pairs(Players:GetPlayers()) do
+			if player ~= localPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") and player.Character:FindFirstChild("Humanoid") and player.Character.Humanoid.Health > 0 then
+				local magnitude = (player.Character.HumanoidRootPart.Position - character.Position).Magnitude
+
+				if magnitude < n2 then
+					n2 = magnitude
+					v6 = player
+				end
+			end
+		end
+
+		return v6
+	end
+
+	v3:Toggle({
+		Title = "CamLock (Auto Games)",
+		Callback = function(camLockEnabled)
+			_G.CamLockEnabled = camLockEnabled
+
+			if camLockEnabled then
+				if not _G.CamLockSearchThread then
+					_G.CamLockSearchThread = true
+
+					task.spawn(function()
+						while _G.CamLockSearchThread do
+							if (fn4("LightsOut") or fn4("Mingle") or fn4("SkySquidGame") or fn4("SquidGame") or fn4("LastDinner")) and _G.CamLockEnabled then
+								v5 = fn13()
+							else
+								v5 = nil
+							end
+
+							task.wait(0.2)
+						end
+					end)
+				end
+
+				if not _G.CamLockBound then
+					local n2 = 533929458
+					_G.CamLockBound = true
+
+					RunService:BindToRenderStep("UwUCamLock", Enum.RenderPriority.Camera.Value + 1, function()
+						if _G.CamLockEnabled and v5 and v5.Character then
+							local humanoidRootPart = v5.Character:FindFirstChild("HumanoidRootPart")
+							local currentCamera = workspace.CurrentCamera
+
+							if humanoidRootPart and currentCamera then
+								currentCamera.CFrame = CFrame.new(currentCamera.CFrame.Position, humanoidRootPart.Position)
+							end
+						end
+					end)
+				end
+			else
+				_G.CamLockSearchThread = false
+
+				if _G.CamLockBound then
+					RunService:UnbindFromRenderStep("UwUCamLock")
+					_G.CamLockBound = false
+				end
+
+				v5 = nil
+			end
+		end,
+	})
+end
+
+do
+	local v3 = v:Tab({ Title = "Tools", Icon = "wrench" })
+	local connection2 = nil
+	local tbl7 = {}
+	local tbl8 = {}
+
+	local function fn10(arg)
+		if not arg then
+			return nil
+		end
+		local tbl9 = { "_EquippedPower", "EquippedPower", "Power", "CurrentPower", "Ability", "EquippedGuardPower" }
+
+		for _, v4 in ipairs(tbl9) do
+			local attribute = arg:GetAttribute(v4)
+			if attribute ~= nil and attribute ~= false and attribute ~= "" and attribute ~= 0 and attribute ~= "None" and attribute ~= "Yok" then
+				return tostring(attribute)
+			end
+		end
+
+		local character = arg.Character
+
+		if character then
+			for _, v4 in ipairs(tbl9) do
+				local attribute = character:GetAttribute(v4)
+				if attribute ~= nil and attribute ~= false and attribute ~= "" and attribute ~= 0 and attribute ~= "None" and attribute ~= "Yok" then
+					return tostring(attribute)
+				end
+			end
+
+			for _, descendant in ipairs(character:GetDescendants()) do
+				if descendant.Name == "_EquippedPower" or descendant.Name == "EquippedPower" or descendant.Name == "Power" then
+					if (descendant:IsA("StringValue") or descendant:IsA("NumberValue")) and descendant.Value ~= "" and descendant.Value ~= "None" then
+						return tostring(descendant.Value)
+					end
+				end
+			end
+		end
+
+		return nil
+	end
+
+	local function fn11(arg)
+		if not arg or not arg.Character then
+			return
+		end
+		local character = arg.Character
+		local head = character:FindFirstChild("Head") or character:FindFirstChild("HumanoidRootPart")
+		local v4 = fn10(arg)
+
+		if tbl.espPowersEnabled and head and v4 then
+			local v5 = tbl8[arg]
+
+			if not v5 or not v5.Parent then
+				local billboardGui = Instance.new("BillboardGui")
+				billboardGui.Name = fn(8)
+				billboardGui.AlwaysOnTop = false
+				billboardGui.Size = UDim2.new(0, 100, 0, 20)
+				billboardGui.StudsOffset = Vector3.new(0, 1.5, 0)
+				local textLabel = Instance.new("TextLabel")
+				textLabel.Name = fn(8)
+				textLabel.BackgroundTransparency = 1
+				textLabel.Size = UDim2.new(1, 0, 1, 0)
+				textLabel.Text = v4
+				textLabel.TextColor3 = Color3.new(1, 1, 1)
+				textLabel.Font = Enum.Font.Arcade
+				textLabel.TextSize = 10
+				textLabel.TextStrokeTransparency = 0.5
+				textLabel.Parent = billboardGui
+				billboardGui.Parent = head
+				tbl8[arg] = billboardGui
+			else
+				if v5.Parent ~= head then
+					v5.Parent = head
+				end
+
+				local textLabel = v5:FindFirstChildOfClass("TextLabel")
+
+				if textLabel then
+					textLabel.Text = v4
+				end
+			end
+		elseif tbl8[arg] then
+			tbl8[arg]:Destroy()
+			tbl8[arg] = nil
+		end
+	end
+
+	local function fn12(arg)
+		if not arg or arg == localPlayer then
+			return
+		end
+
+		if tbl7[arg] then
+			tbl7[arg]:Disconnect()
+			tbl7[arg] = nil
+		end
+
+		tbl7[arg] = arg:GetAttributeChangedSignal("_EquippedPower"):Connect(function()
+			fn11(arg)
+		end)
+
+		tbl7[arg.Name .. "_char"] = arg.CharacterAdded:Connect(function()
+			task.wait(1)
+
+			if tbl.espPowersEnabled then
+				fn11(arg)
+			end
+		end)
+
+		fn11(arg)
+	end
+
+	local function fn13()
+		for _, v4 in pairs(tbl7) do
+			pcall(function()
+				v4:Disconnect()
+			end)
+		end
+
+		table.clear(tbl7)
+
+		for _, v4 in pairs(tbl8) do
+			if v4 then
+				pcall(function()
+					v4:Destroy()
+				end)
+			end
+		end
+
+		table.clear(tbl8)
+	end
+
+	v3:Toggle({
+		Title = "Bypass Movement Checks",
+		Callback = function(bypassMovementChecks)
+			tbl.bypassMovementChecks = bypassMovementChecks
+
+			if tbl.bypassMovementChecks and not tbl2.bypassMovementThread then
+				tbl2.bypassMovementThread = task.spawn(function()
+					while tbl.bypassMovementChecks do
+						pcall(function()
+							print("stripped")
+							end
+						end)
+
+						task.wait(1)
+					end
+
+					tbl2.bypassMovementThread = nil
+				end)
+			elseif not tbl.bypassMovementChecks then
+				tbl2.bypassMovementThread = nil
+			end
+		end,
+	})
+
+	local v4 = CoreGui
+	local tbl9 = {}
+	local connection3 = nil
+
+	local function fn14(arg, arg2)
+		return math.floor((arg - arg2).Magnitude)
+	end
+
+	local function fn15()
+		for _, player in ipairs(Players:GetPlayers()) do
+			if player ~= localPlayer then
+				local character = player.Character
+				local head = character and character:FindFirstChild("Head")
+				local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+
+				if tbl.playerEspEnabled and head and humanoid and humanoid.Health > 0 then
+					local billboardGui = tbl9[player]
+
+					if not billboardGui or not billboardGui.Parent then
+						billboardGui = Instance.new("BillboardGui")
+						billboardGui.Name = fn(8)
+						billboardGui.AlwaysOnTop = true
+						billboardGui.Size = UDim2.new(0, 200, 0, 45)
+						billboardGui.StudsOffset = Vector3.new(0, 3.5, 0)
+						local textLabel = Instance.new("TextLabel")
+						textLabel.Name = fn(8)
+						textLabel.BackgroundTransparency = 1
+						textLabel.Size = UDim2.new(1, 0, 1, 0)
+						textLabel.Text = ""
+						textLabel.TextColor3 = Color3.new(1, 1, 1)
+						textLabel.TextStrokeTransparency = 0
+						textLabel.Font = Enum.Font.GothamBold
+						textLabel.TextSize = 11
+						textLabel.Parent = billboardGui
+
+						pcall(function()
+							billboardGui.Parent = v4
+						end)
+
+						tbl9[player] = billboardGui
+					end
+
+					billboardGui.Adornee = head
+					local textLabel = billboardGui:FindFirstChildOfClass("TextLabel")
+
+					if textLabel then
+						local humanoidRootPart = localPlayer.Character and localPlayer.Character:FindFirstChild("HumanoidRootPart") and character:FindFirstChild("HumanoidRootPart")
+						local n = 0
+
+						if humanoidRootPart then
+							n = fn14(localPlayer.Character.HumanoidRootPart.Position, character.HumanoidRootPart.Position)
+						end
+
+						local n2 = math.floor(humanoid.Health)
+						local n3 = math.floor(humanoid.MaxHealth)
+						textLabel.Text = string.format("%s\nHP: %d/%d | [%ds]", player.DisplayName, n2, n3, n)
+
+						if n2 / n3 > 0.7 then
+							textLabel.TextColor3 = Color3.fromRGB(80, 255, 80)
+						elseif n2 / n3 > 0.35 then
+							textLabel.TextColor3 = Color3.fromRGB(255, 180, 50)
+						else
+							textLabel.TextColor3 = Color3.fromRGB(255, 80, 80)
+						end
+					end
+				elseif tbl9[player] then
+					pcall(function()
+						tbl9[player]:Destroy()
+					end)
+
+					tbl9[player] = nil
+				end
+			end
+		end
+	end
+
+	local function fn16()
+		if connection3 then
+			pcall(function()
+				connection3:Disconnect()
+			end)
+
+			connection3 = nil
+		end
+
+		for _, v5 in pairs(tbl9) do
+			if v5 then
+				pcall(function()
+					v5:Destroy()
+				end)
+			end
+		end
+
+		table.clear(tbl9)
+	end
+
+	v3:Toggle({
+		Title = "Player ESP",
+		Callback = function(playerEspEnabled)
+			tbl.playerEspEnabled = playerEspEnabled
+
+			if playerEspEnabled then
+				if not connection3 then
+					connection3 = RunService.RenderStepped:Connect(fn15)
+				end
+			else
+				fn16()
+			end
+		end,
+	})
+
+	v3:Toggle({
+		Title = "ESP Powers",
+		Callback = function(espPowersEnabled)
+			tbl.espPowersEnabled = espPowersEnabled
+
+			if espPowersEnabled then
+				local v5, v6, v7 = ipairs(Players:GetPlayers())
+
+				for _, v8 in v5, v6, v7 do
+					if v8 ~= localPlayer then
+						fn12(v8)
+					end
+				end
+
+				tbl7._PlayerAdded = Players.PlayerAdded:Connect(function(player)
+					if tbl.espPowersEnabled and player ~= localPlayer then
+						fn12(player)
+					end
+				end)
+			else
+				fn13()
+			end
+		end,
+	})
+
+	v3:Toggle({
+		Title = "Auto QTE Event (All Games)",
+		Callback = function(allGamesAutoQTEEnabled)
+			tbl.allGamesAutoQTEEnabled = allGamesAutoQTEEnabled
+
+			if tbl.allGamesAutoQTEEnabled and not tbl2.allGamesQTEThread then
+				tbl2.allGamesQTEThread = task.spawn(function()
+					local tbl10 = {}
+
+					while tbl.allGamesAutoQTEEnabled do
+						local v5 = fn6()
+
+						if v5 and v5.ActiveButtons then
+							for k, activeButton in pairs(v5.ActiveButtons) do
+								activeButton = not tbl10[k] and activeButton
+
+								if activeButton then
+									tbl10[k] = true
+
+									if tbl.allGamesAutoQTEEnabled and v5.ActiveButtons and v5.ActiveButtons[k] then
+										pcall(function()
+											v5.Pressed(false, v5.ActiveButtons[k])
+										end)
+									end
+								end
+							end
+
+							for k in pairs(tbl10) do
+								if not v5.ActiveButtons[k] then
+									tbl10[k] = nil
+								end
+							end
+						else
+							table.clear(tbl10)
+						end
+
+						task.wait()
+					end
+
+					tbl2.allGamesQTEThread = nil
+				end)
+			elseif not tbl.allGamesAutoQTEEnabled then
+				tbl2.allGamesQTEThread = nil
+			end
+		end,
+	})
+
+	v3:Toggle({
+		Title = "Bandage Helper",
+		Callback = function(arg)
+			if arg then
+				if _G.BandageHelperActive then
+					return
+				end
+				_G.BandageHelperActive = true
+				_G.BandageConns = {}
+				local tbl10 = { "Freeze", "Slowed", "Action", "LightAction", "NoAttack" }
+				local tbl11 = { "Stun", "Freeze", "Slowed", "Action", "LightAction", "Ragdoll", "NoAttack" }
+
+				local function fn17(character)
+					if not character or not _G.BandageHelperActive then
+						return
+					end
+					local humanoid = character:WaitForChild("Humanoid", 5)
+					if not humanoid then
+						return
+					end
+
+					table.insert(_G.BandageConns, (humanoid:FindFirstChildOfClass("Animator") or humanoid).AnimationPlayed:Connect(function(arg2)
+						if _G.BandageHelperActive and arg2.Animation and (string.find(arg2.Animation.AnimationId, "75334524397463") or arg2.Animation.Name and string.find(string.lower(arg2.Animation.Name), "bandage")) then
+							arg2:Stop()
+						end
+					end))
+				end
+
+				if localPlayer.Character then
+					fn17(localPlayer.Character)
+				end
+
+				table.insert(_G.BandageConns, localPlayer.CharacterAdded:Connect(fn17))
+
+				table.insert(_G.BandageConns, RunService.Heartbeat:Connect(function()
+					if not _G.BandageHelperActive then
+						return
+					end
+					local character = localPlayer.Character
+					if not character then
+						return
+					end
+					local humanoid = character:FindFirstChildOfClass("Humanoid")
+					local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
+
+					for _, v5 in ipairs(tbl10) do
+						if character:GetAttribute(v5) ~= nil then
+							character:SetAttribute(v5, nil)
+						end
+
+						if humanoid and humanoid:GetAttribute(v5) ~= nil then
+							humanoid:SetAttribute(v5, nil)
+						end
+					end
+
+					for _, v5 in ipairs(tbl11) do
+						local v6 = character:FindFirstChild(v5)
+
+						if v6 then
+							v6:Destroy()
+						end
+					end
+
+					if humanoidRootPart and humanoidRootPart.Anchored then
+						humanoidRootPart.Anchored = false
+					end
+				end))
+			else
+				_G.BandageHelperActive = false
+
+				if _G.BandageConns then
+					for _, bandageConn in ipairs(_G.BandageConns) do
+						if bandageConn then
+							bandageConn:Disconnect()
+						end
+					end
+
+					table.clear(_G.BandageConns)
+				end
+			end
+		end,
+	})
+
+	v3:Toggle({
+		Title = "Infinite Jump",
+		Callback = function(arg)
+			if arg then
+				if connection2 then
+					return
+				end
+
+				connection2 = UserInputService.JumpRequest:Connect(function()
+					local character = localPlayer.Character
+
+					if character then
+						local humanoid = character:FindFirstChildWhichIsA("Humanoid")
+
+						if humanoid then
+							humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+						end
+					end
+				end)
+			elseif connection2 then
+				connection2:Disconnect()
+				connection2 = nil
+			end
+		end,
+	})
+
+	v3:Toggle({
+		Title = "Fps Booster & Anti Lag",
+		Callback = function(fpsBoosterEnabled)
+			tbl.fpsBoosterEnabled = fpsBoosterEnabled
+			local Lighting = game:GetService("Lighting")
+			local terrain = workspace:FindFirstChildOfClass("Terrain")
+
+			if tbl.fpsBoosterEnabled then
+				if terrain then
+					terrain.WaterWaveSize = 0
+					terrain.WaterWaveSpeed = 0
+					terrain.WaterReflectance = 0
+					terrain.WaterTransparency = 0
+				end
+
+				Lighting.GlobalShadows = false
+				Lighting.FogEnd = 9e9
+				Lighting.Brightness = 1
+				settings().Rendering.QualityLevel = "Level01"
+				local v5, v6, v7 = pairs(workspace:GetDescendants())
+
+				for _, v8 in v5, v6, v7 do
+					if v8:IsA("Part") or v8:IsA("Union") or v8:IsA("CornerWedgePart") or v8:IsA("TrussPart") then
+						v8.Material = "Plastic"
+						v8.Reflectance = 0
+					else
+						local isDecal = v8:IsA("Decal")
+						local flag
+
+						if isDecal then
+							flag = isDecal
+						else
+							flag = v8:IsA("Texture") and v8.Name ~= "TOWDecal"
+						end
+
+						if flag then
+							v8.Transparency = 1
+						elseif v8:IsA("ParticleEmitter") or v8:IsA("Trail") then
+							v8.Lifetime = NumberRange.new(0)
+						elseif v8:IsA("Explosion") then
+							v8.BlastPressure = 1
+							v8.BlastRadius = 1
+						end
+					end
+				end
+			else
+				if terrain then
+					terrain.WaterWaveSize = 0.15
+					terrain.WaterWaveSpeed = 10
+					terrain.WaterReflectance = 1
+					terrain.WaterTransparency = 1
+				end
+
+				Lighting.GlobalShadows = true
+				settings().Rendering.QualityLevel = "Automatic"
+			end
+		end,
+	})
+
+	v3:Toggle({
+		Title = "Anti-AFK",
+		Callback = function(arg)
+			if arg then
+				if not getgenv().antiAfkConnection then
+					getgenv().antiAfkConnection = localPlayer.Idled:Connect(function()
+						local VirtualUser = game:GetService("VirtualUser")
+						VirtualUser:CaptureController()
+						VirtualUser:ClickButton2(Vector2.new())
+					end)
+				end
+			elseif getgenv().antiAfkConnection then
+				getgenv().antiAfkConnection:Disconnect()
+				getgenv().antiAfkConnection = nil
+			end
+		end,
+	})
+end
+
+do
+	local v3 = v:Tab({ Title = "Utilities", Icon = "settings-2" })
+	local flag = false
+	local connection2 = nil
+
+	local function fn10()
+		local character = localPlayer.Character
+		if not character then
+			return false
+		end
+
+		if character:FindFirstChild("Bandage") or localPlayer.Backpack:FindFirstChild("Bandage") then
+			return true
+		end
+		return false
+	end
+
+	local function fn11()
+		local effects = workspace:FindFirstChild("Effects")
+		if not effects then
+			return nil, nil
+		end
+
+		for _, child in ipairs(effects:GetChildren()) do
+			if string.find(string.lower(child.Name), "bandage") then
+				local isBasePart = child:IsA("BasePart") and child or child:FindFirstChildWhichIsA("BasePart")
+				if isBasePart then
+					return child, isBasePart
+				end
+			end
+		end
+
+		return nil, nil
+	end
+
+	local tbl7 = { "Left Hip", "Left Shoulder", "Neck", "Right Hip", "Right Shoulder" }
+
+	local tbl8 = {
+		"Ragdoll",
+		"Stun",
+		"RotateDisabled",
+		"RagdollWakeupImmunity",
+		"RagdollWakeupImmunityLess",
+		"StopLoopTpFix",
+		"TrueStun",
+		"Waiting",
+		"waitbeforecheckingforground",
+	}
+
+	local tbl9 = { "Ragdoll", "TrueStun", "Stun", "RotateDisabled", "Waiting" }
+
+	local function fn12(arg)
+		for _, v4 in ipairs(tbl8) do
+			local v5 = arg:FindFirstChild(v4)
+
+			if v5 then
+				v5.Parent = nil
+			end
+		end
+	end
+
+	local function fn13(arg)
+		local torso = arg:FindFirstChild("Torso")
+		if not torso then
+			return
+		end
+
+		for _, child in ipairs(torso:GetChildren()) do
+			if child:IsA("BallSocketConstraint") and child.Name:match("^SocketConstraint") then
+				child.Enabled = false
+				child.Parent = nil
+			end
+		end
+
+		for _, v4 in ipairs(tbl7) do
+			local v5 = torso:FindFirstChild(v4)
+
+			if v5 and v5:IsA("Motor6D") and not v5.Part0 then
+				v5.Part0 = torso
+			end
+		end
+	end
+
+	local function fn14(arg)
+		local humanoidRootPart = arg:FindFirstChild("HumanoidRootPart")
+		if not humanoidRootPart then
+			return
+		end
+
+		for _, child in ipairs(humanoidRootPart:GetChildren()) do
+			if child.Name:match("^CacheAttachment") or child.Name:match("^SocketConstraint") then
+				child.Parent = nil
+			end
+		end
+
+		for _, child in ipairs(humanoidRootPart:GetChildren()) do
+			if child:IsA("BodyVelocity") or child:IsA("BodyForce") or child:IsA("BodyPosition") then
+				if not (tbl4 and tbl4.BodyVelocity == child) then
+					child.Parent = nil
+				end
+			end
+		end
+	end
+
+	local function fn15(arg)
+		local humanoid = arg:FindFirstChildOfClass("Humanoid")
+		if not humanoid then
+			return
+		end
+		local humanoidRootPart = arg:FindFirstChild("HumanoidRootPart")
+		fn12(arg)
+
+		if not fn2() then
+			humanoid.PlatformStand = false
+			humanoid.AutoRotate = true
+			humanoid:SetStateEnabled(Enum.HumanoidStateType.Freefall, true)
+			humanoid:SetStateEnabled(Enum.HumanoidStateType.Jumping, true)
+			humanoid:SetStateEnabled(Enum.HumanoidStateType.Running, true)
+			humanoid:SetStateEnabled(Enum.HumanoidStateType.GettingUp, true)
+			humanoid:SetStateEnabled(Enum.HumanoidStateType.FallingDown, false)
+			humanoid:SetStateEnabled(Enum.HumanoidStateType.Ragdoll, false)
+			humanoid:SetStateEnabled(Enum.HumanoidStateType.PlatformStanding, false)
+			humanoid:ChangeState(Enum.HumanoidStateType.GettingUp)
+		end
+
+		if humanoidRootPart and not fn2() then
+			humanoidRootPart.AssemblyLinearVelocity = Vector3.new(0, humanoidRootPart.AssemblyLinearVelocity.Y, 0)
+		end
+
+		fn13(arg)
+		fn14(arg)
+		humanoid.WalkSpeed = BASE_WALKSPEED
+		humanoid.JumpPower = BASE_JUMPPOWER
+
+		if shared then
+			shared.WalkSpeedChangeTick = nil
+		end
+
+		task.delay(0.1, function()
+			if not fn2() and humanoid and humanoid.Parent and humanoid.Health > 0 then
+				humanoid:ChangeState(Enum.HumanoidStateType.GettingUp)
+			end
+		end)
+	end
+
+	local tbl10 = {}
+
+	local function fn16()
+		for _, v4 in ipairs(tbl10) do
+			if v4 then
+				v4:Disconnect()
+			end
+		end
+
+		table.clear(tbl10)
+	end
+
+	local function fn17(arg)
+		if not tbl.antiPushEnabled then
+			return
+		end
+		fn16()
+		local humanoid = arg:FindFirstChildOfClass("Humanoid")
+		if not humanoid then
+			return
+		end
+		local humanoidRootPart = arg:FindFirstChild("HumanoidRootPart")
+		if not humanoidRootPart then
+			return
+		end
+		local flag2 = false
+
+		local connection3 = arg.ChildAdded:Connect(function(child)
+			if flag2 or not tbl.antiPushEnabled then
+				return
+			end
+
+			if typeof(child) == "Instance" then
+				local name = child.Name
+
+				for _, v4 in ipairs(tbl9) do
+					if name == v4 then
+						task.spawn(function()
+							fn15(arg)
+						end)
+
+						break
+					end
+				end
+			end
+		end)
+
+		table.insert(tbl10, connection3)
+
+		local connection4 = RunService.Heartbeat:Connect(function()
+			if not tbl.antiPushEnabled then
+				fn16()
+				return
+			end
+
+			if not arg or not arg.Parent then
+				fn16()
+				return
+			end
+
+			if not humanoid or not humanoid.Parent or humanoid.Health <= 0 then
+				flag2 = true
+				fn16()
+				return
+			end
+
+			fn12(arg)
+
+			if not fn2() then
+				if humanoid.PlatformStand then
+					humanoid.PlatformStand = false
+					humanoid:ChangeState(Enum.HumanoidStateType.GettingUp)
+				end
+
+				if not humanoid.AutoRotate then
+					humanoid.AutoRotate = true
+				end
+
+				local gettingUp = Enum.HumanoidStateType.GettingUp
+
+				if not humanoid:GetStateEnabled(gettingUp) then
+					humanoid:SetStateEnabled(Enum.HumanoidStateType.GettingUp, gettingUp)
+				end
+			end
+
+			if humanoid.WalkSpeed <= 0 then
+				humanoid.WalkSpeed = BASE_WALKSPEED
+
+				if shared then
+					shared.WalkSpeedChangeTick = nil
+				end
+			end
+
+			if humanoid.JumpPower <= 0 then
+				humanoid.JumpPower = BASE_JUMPPOWER
+			end
+
+			local jumping = Enum.HumanoidStateType.Jumping
+
+			if not humanoid:GetStateEnabled(jumping) then
+				humanoid:SetStateEnabled(Enum.HumanoidStateType.Jumping, jumping)
+			end
+
+			local running = Enum.HumanoidStateType.Running
+
+			if not humanoid:GetStateEnabled(running) then
+				humanoid:SetStateEnabled(Enum.HumanoidStateType.Running, running)
+			end
+
+			local torso = arg:FindFirstChild("Torso")
+
+			if torso then
+				local flag3 = false
+
+				for _, child in ipairs(torso:GetChildren()) do
+					if child:IsA("BallSocketConstraint") and child.Name:match("^SocketConstraint") and child.Enabled then
+						flag3 = true
+						break
+					end
+				end
+
+				if flag3 then
+					fn13(arg)
+				end
+			end
+
+			if humanoidRootPart and humanoidRootPart.Parent then
+				for _, child in ipairs(humanoidRootPart:GetChildren()) do
+					local isBodyVelocity = child:IsA("BodyVelocity") or child:IsA("BodyForce") or child:IsA("BodyPosition")
+					local flag3
+
+					if isBodyVelocity then
+						flag3 = not (tbl4 and tbl4.BodyVelocity == child)
+					else
+						flag3 = isBodyVelocity
+					end
+
+					if flag3 then
+						child.Parent = nil
+					end
+				end
+			end
+		end)
+
+		table.insert(tbl10, connection4)
+	end
+
+	v3:Toggle({
+		Title = "Auto Steal Bandages",
+		Callback = function(arg)
+			flag = arg
+
+			if flag then
+				if tbl2.stealThread then
+					return
+				end
+				tbl2.stealThread = true
+
+				task.spawn(function()
+					while flag and tbl2.stealThread do
+						if not fn10() then
+							local v4, v5 = fn11()
+
+							if v4 and v5 then
+								local character = localPlayer.Character
+								local humanoidRootPart = character and character:FindFirstChild("HumanoidRootPart")
+
+								if humanoidRootPart then
+									local cFrame = humanoidRootPart.CFrame
+									humanoidRootPart.CFrame = v5.CFrame
+									task.wait(0.2)
+
+									if typeof(firetouchinterest) == "function" then
+										pcall(function()
+											firetouchinterest(humanoidRootPart, v5, 0)
+											task.wait(0.05)
+											firetouchinterest(humanoidRootPart, v5, 1)
+										end)
+									end
+
+									task.wait(0.2)
+
+									if character and character:FindFirstChild("HumanoidRootPart") then
+										character.HumanoidRootPart.CFrame = cFrame
+									end
+								end
+							end
+						end
+
+						task.wait(0.5)
+					end
+
+					tbl2.stealThread = nil
+				end)
+			else
+				tbl2.stealThread = nil
+			end
+		end,
+	})
+
+	v3:Toggle({
+		Title = "Anti Push/Ragdoll",
+		Callback = function(antiPushEnabled)
+			tbl.antiPushEnabled = antiPushEnabled
+
+			if antiPushEnabled then
+				if localPlayer.Character then
+					fn17(localPlayer.Character)
+				end
+
+				local connection3 = localPlayer.CharacterAdded:Connect(function(character)
+					task.wait(0.5)
+
+					if tbl.antiPushEnabled then
+						fn17(character)
+					end
+				end)
+
+				table.insert(tbl10, connection3)
+			else
+				fn16()
+			end
+		end,
+	})
+
+	v3:Toggle({
+		Title = "Instant Interact",
+		Callback = function(instantInteractEnabled)
+			tbl.instantInteractEnabled = instantInteractEnabled
+
+			if tbl.instantInteractEnabled then
+				connection2 = game:GetService("ProximityPromptService").PromptButtonHoldBegan:Connect(function(prompt, player)
+					if tbl.instantInteractEnabled and player == localPlayer then
+						if fireproximityprompt then
+							fireproximityprompt(prompt)
+						end
+					end
+				end)
+			elseif connection2 then
+				connection2:Disconnect()
+				connection2 = nil
+			end
+		end,
+	})
+
+	v3:Button({
+		Title = "Teleport 100 Stud Up",
+		Callback = function()
+			local character = localPlayer.Character
+			character = character and character:FindFirstChild("HumanoidRootPart")
+
+			if character then
+				fn3(character.CFrame + Vector3.new(0, 100, 0))
+				fn5("Teleport", "Teleported 100 studs up")
+			end
+		end,
+	})
+
+	v3:Button({
+		Title = "Teleport 50 Stud Down",
+		Callback = function()
+			local character = localPlayer.Character
+			character = character and character:FindFirstChild("HumanoidRootPart")
+
+			if character then
+				fn3(character.CFrame + Vector3.new(0, -50, 0))
+				fn5("Teleport", "Teleported 50 studs down")
+			end
+		end,
+	})
+end
+
+local v3 = v:Tab({ Title = "Visual", Icon = "eye" })
+
+v3:Toggle({
+	Title = "Visual Ultra Instinct",
+	Default = false,
+	Callback = function(arg)
+		if arg then
+			pcall(function()
+				if getgenv and getgenv()._UI_CLEANUP then
+					getgenv()._UI_CLEANUP()
+				end
+			end)
+
+			local SharedFunctions = nil
+			local Effects = nil
+			local UIDodgeCLIENTEFFECTS = nil
+
+			pcall(function()
+				SharedFunctions = require(ReplicatedStorage.Modules.SharedFunctions)
+				Effects = require(ReplicatedStorage.Modules.Effects)
+				UIDodgeCLIENTEFFECTS = require(ReplicatedStorage.Modules.AbilityEffectsModules.UIDodgeCLIENTEFFECTS)
+			end)
+
+			local tbl7 = {
+				"rbxassetid://109819027147829",
+				"rbxassetid://92129593029820",
+				"rbxassetid://119518089922771",
+				"rbxassetid://133278063201532",
+				"rbxassetid://114251651938052",
+			}
+
+			local tbl8 = {
+				"rbxassetid://117886505329162",
+				"rbxassetid://72808867502440",
+				"rbxassetid://94169703055500",
+				"rbxassetid://94537387793682",
+				"rbxassetid://82454268128485",
+			}
+
+			local n = 1
+			local flag = false
+			local value = 10
+			local n2 = 10
+			local tbl9 = {}
+			local flag2 = true
+			local intValue = Instance.new("IntValue")
+			intValue.Name = fn(8)
+			intValue.Value = value
+			intValue:SetAttribute("MaxDodges", 10)
+
+			local function fn10(parent)
+				tbl9 = {}
+				local animator = parent:FindFirstChildOfClass("Animator")
+
+				if not animator then
+					animator = Instance.new("Animator")
+					animator.Name = fn(8)
+					animator.Parent = parent
+				end
+
+				for _, v4 in ipairs(tbl8) do
+					local animation = Instance.new("Animation")
+					animation.AnimationId = v4
+					local v5 = animator:LoadAnimation(animation)
+					v5.Priority = Enum.AnimationPriority.Action4
+					table.insert(tbl9, v5)
+				end
+			end
+
+			local function fn11(arg2)
+				if not arg2 then
+					return
+				end
+
+				for _, descendant in ipairs(arg2:GetDescendants()) do
+					if descendant:IsA("ParticleEmitter") or descendant:IsA("Highlight") then
+						if descendant.Name:find("UI_") or descendant.Name:find("Permanent_") or descendant.Name == "Highlight" then
+							pcall(function()
+								descendant:Destroy()
+							end)
+						end
+					elseif descendant:IsA("Attachment") and (descendant.Name:find("UI_") or descendant.Name:find("Permanent_")) then
+						local n3 = 238953986
+
+						pcall(function()
+							descendant:Destroy()
+						end)
+					end
+				end
+			end
+
+			local function fn12()
+				pcall(function()
+					intValue.Value = value
+
+					if Effects and Effects.UltraInstinctDisplayDodge then
+						Effects.UltraInstinctDisplayDodge({ Obj = intValue })
+					end
+				end)
+			end
+
+			local function fn13(arg2)
+				if not arg2 then
+					return
+				end
+				local humanoidRootPart = arg2:FindFirstChild("HumanoidRootPart")
+				if not humanoidRootPart then
+					return
+				end
+
+				if SharedFunctions and SharedFunctions.PlaySound then
+					pcall(function()
+						SharedFunctions.PlaySound(humanoidRootPart, "rbxassetid://121690585734302", 7)
+					end)
+				end
+
+				if UIDodgeCLIENTEFFECTS then
+					pcall(function()
+						UIDodgeCLIENTEFFECTS({ ModuleName = "UIDodge", Character = arg2, initial = true })
+					end)
+				end
+
+				pcall(function()
+					local uiDodge = ReplicatedStorage.Effects.SetupParts.CustomEffectsFolders:FindFirstChild("UIDodge")
+
+					if uiDodge then
+						for _, v4 in ipairs({ "Torso", "Head", "Left Arm", "Right Arm", "Left Leg", "Right Leg" }) do
+							local v5 = arg2:FindFirstChild(v4)
+							local v6 = uiDodge:FindFirstChild(v4)
+
+							if v5 and v6 then
+								for _, child in ipairs(v6:GetChildren()) do
+									if child:IsA("ParticleEmitter") then
+										local clone = child:Clone()
+										clone.Parent = v5
+										clone:Emit(clone:GetAttribute("EmitCount") or 15)
+
+										task.delay(2.5, function()
+											if clone and clone.Parent then
+												clone:Destroy()
+											end
+										end)
+									end
+								end
+							end
+						end
+					end
+				end)
+			end
+
+			local function fn14()
+				local character = localPlayer.Character
+				if not character then
+					return
+				end
+				local humanoid = character:FindFirstChildOfClass("Humanoid")
+				local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
+				if not humanoid or not humanoidRootPart or humanoid.Health <= 0 then
+					return
+				end
+
+				if flag then
+					return
+				end
+				flag = true
+				local v4 = n
+				n = n % #tbl8 + 1
+
+				if value > 0 then
+					value -= 1
+				else
+					value = n2
+				end
+
+				fn12()
+
+				pcall(function()
+					local str = tbl7[v4] or "rbxassetid://109819027147829"
+
+					if SharedFunctions and SharedFunctions.PlaySound then
+						SharedFunctions.PlaySound(humanoidRootPart, str, 7)
+					end
+				end)
+
+				if #tbl9 == 0 then
+					fn10(humanoid)
+				end
+
+				local v5 = tbl9[v4]
+
+				if v5 then
+					v5:Play(0.01, 1, 1.45)
+				end
+
+				if UIDodgeCLIENTEFFECTS then
+					pcall(function()
+						UIDodgeCLIENTEFFECTS({ ModuleName = "UIDodge", Character = character, dodgenumber = v4 })
+					end)
+				end
+
+				local moveDirection = humanoid.MoveDirection
+
+				if moveDirection.Magnitude < 0.1 then
+					moveDirection = -humanoidRootPart.CFrame.LookVector
+				end
+
+				local n3 = moveDirection * 68 + Vector3.new(0, 4, 0)
+				humanoidRootPart.AssemblyLinearVelocity = Vector3.new(n3.X, humanoidRootPart.AssemblyLinearVelocity.Y, n3.Z)
+
+				task.delay(0.25, function()
+					flag = false
+				end)
+			end
+
+			local function fn15()
+				local backpack = localPlayer:FindFirstChild("Backpack")
+				if not backpack then
+					return
+				end
+				local ultraInstinct = backpack:FindFirstChild("Ultra Instinct")
+				local ultraInstinct2
+
+				if ultraInstinct then
+					ultraInstinct2 = ultraInstinct
+				else
+					ultraInstinct2 = localPlayer.Character and localPlayer.Character:FindFirstChild("Ultra Instinct")
+				end
+
+				if ultraInstinct2 then
+					pcall(function()
+						ultraInstinct2:Destroy()
+					end)
+				end
+
+				local tool = Instance.new("Tool")
+				tool.Name = "Ultra Instinct"
+				tool.RequiresHandle = false
+				tool.CanBeDropped = false
+				tool.ToolTip = "Ultra Instinct"
+
+				tool.Equipped:Connect(function()
+					if localPlayer.Character then
+						fn13(localPlayer.Character)
+						fn14()
+					end
+				end)
+
+				tool.Activated:Connect(function()
+					fn14()
+				end)
+
+				tool.Parent = backpack
+
+				task.spawn(function()
+					local playerGui = localPlayer:FindFirstChild("PlayerGui")
+					playerGui = playerGui and playerGui:FindFirstChild("Hotbar")
+
+					if playerGui then
+						for _, descendant in ipairs(playerGui:GetDescendants()) do
+							if descendant:IsA("TextButton") then
+								local toolName = descendant:FindFirstChild("ToolName", true)
+
+								if toolName and toolName.Text == "Ultra Instinct" then
+									descendant.MouseButton1Click:Connect(function()
+										if localPlayer.Character then
+											fn13(localPlayer.Character)
+										end
+
+										fn14()
+									end)
+								end
+							end
+						end
+					end
+				end)
+			end
+
+			if localPlayer.Character then
+				fn11(localPlayer.Character)
+				local humanoid = localPlayer.Character:FindFirstChildOfClass("Humanoid")
+
+				if humanoid then
+					fn10(humanoid)
+				end
+
+				fn13(localPlayer.Character)
+			end
+
+			fn15()
+			fn12()
+			local spawn = task.spawn
+
+			local function fn16()
+				local n3 = 0
+
+				while flag2 do
+					task.wait(0.5)
+					n3 += 0.5
+
+					if n3 >= 4.5 then
+						n3 = 0
+
+						if value < n2 then
+							value += 1
+							fn12()
+						end
+					end
+				end
+			end
+
+			spawn(fn16)
+
+			local connection2 = localPlayer.CharacterAdded:Connect(function(character)
+				fn11(character)
+				local humanoid = character:WaitForChild("Humanoid", 5)
+
+				if humanoid then
+					fn10(humanoid)
+				end
+
+				task.wait(0.5)
+				fn13(character)
+				fn15()
+				fn12()
+			end)
+
+			getgenv()._UI_CLEANUP = function()
+				flag2 = false
+
+				pcall(function()
+					connection2:Disconnect()
+				end)
+
+				if localPlayer.Character then
+					fn11(localPlayer.Character)
+				end
+
+				local backpack = localPlayer:FindFirstChild("Backpack")
+
+				if backpack then
+					local ultraInstinct = backpack:FindFirstChild("Ultra Instinct")
+
+					if ultraInstinct then
+						pcall(function()
+							ultraInstinct:Destroy()
+						end)
+					end
+				end
+
+				if localPlayer.Character then
+					local ultraInstinct = localPlayer.Character:FindFirstChild("Ultra Instinct")
+
+					if ultraInstinct then
+						pcall(function()
+							ultraInstinct:Destroy()
+						end)
+					end
+				end
+
+				pcall(function()
+					intValue:Destroy()
+				end)
+			end
+		else
+			pcall(function()
+				if getgenv and getgenv()._UI_CLEANUP then
+					getgenv()._UI_CLEANUP()
+					getgenv()._UI_CLEANUP = nil
+				end
+			end)
+		end
+	end,
+})
+
+v3:Toggle({
+	Title = "Lightning God Awakening",
+	Default = false,
+	Callback = function(arg)
+		if arg then
+			pcall(function()
+				if getgenv and getgenv()._LightningGodCleaner then
+					pcall(getgenv()._LightningGodCleaner)
+				end
+			end)
+
+			local flag = false
+			local v4 = nil
+			local v5 = nil
+			local v6 = nil
+			local connection2 = nil
+
+			local function fn10()
+				flag = false
+				local v7 = connection2
+
+				if v7 then
+					local v8 = pcall
+
+					v8(function()
+						connection2:Disconnect()
+					end)
+
+					connection2 = nil
+				end
+
+				if v6 and v6.Parent then
+					pcall(function()
+						v6:Stop()
+						v6:Destroy()
+					end)
+
+					v6 = nil
+				end
+
+				local currentCamera = workspace.CurrentCamera
+
+				if currentCamera then
+					currentCamera.CameraType = Enum.CameraType.Custom
+					currentCamera.FieldOfView = 70
+				end
+
+				if v4 then
+					pcall(function()
+						v4:Stop(0.2)
+					end)
+
+					v4 = nil
+				end
+
+				if v5 then
+					pcall(function()
+						v5:Destroy()
+					end)
+
+					v5 = nil
+				end
+
+				local character = localPlayer.Character
+
+				if character then
+					local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
+
+					if humanoidRootPart then
+						humanoidRootPart.Anchored = false
+					end
+
+					local humanoid = character:FindFirstChildOfClass("Humanoid")
+
+					if humanoid then
+						humanoid.AutoRotate = true
+					end
+
+					for _, child in ipairs(character:GetChildren()) do
+						if child.Name == "LightningGodInterrupt" or child.Name:find("LightningGod") or child.Name == "eyes" or child.Name == "LingeringAura" then
+							local n = 72017223
+
+							pcall(function()
+								child:Destroy()
+							end)
+						end
+					end
+				end
+			end
+
+			local function fn11(arg2)
+				local lightningAwakening = ReplicatedStorage:FindFirstChild("CustomCameraModules") and ReplicatedStorage.CustomCameraModules:FindFirstChild("LightningAwakening")
+				if not lightningAwakening then
+					return
+				end
+				local v7 = nil
+
+				pcall(function()
+					v7 = require(lightningAwakening)()
+				end)
+
+				if not v7 or not v7.Frames or not v7.FOV then
+					return
+				end
+				local frames = v7.Frames
+				local fov = v7.FOV
+				local n = #frames
+				local currentCamera = workspace.CurrentCamera
+				if not currentCamera then
+					return
+				end
+				currentCamera.CameraType = Enum.CameraType.Scriptable
+				local n2 = 1
+
+				if connection2 then
+					connection2:Disconnect()
+					connection2 = nil
+				end
+
+				connection2 = RunService.RenderStepped:Connect(function(deltaTime)
+					local currentCamera2 = workspace.CurrentCamera
+
+					if not flag or not arg2 or not arg2.Parent or not currentCamera2 then
+						if connection2 then
+							connection2:Disconnect()
+							connection2 = nil
+						end
+
+						if currentCamera2 then
+							currentCamera2.CameraType = Enum.CameraType.Custom
+							currentCamera2.FieldOfView = 70
+						end
+
+						return
+					end
+
+					n2 += deltaTime * 60
+					local n3 = math.floor(n2)
+
+					if n < n3 then
+						if connection2 then
+							connection2:Disconnect()
+							connection2 = nil
+						end
+
+						currentCamera2.CameraType = Enum.CameraType.Custom
+						TweenService:Create(currentCamera2, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { FieldOfView = 70 }):Play()
+						return
+					end
+
+					local v8 = frames[n3]
+					local v9 = fov[n3]
+
+					if v8 then
+						local cframe = CFrame.new(v8[1], v8[2], v8[3], v8[4], v8[5], v8[6], v8[7], v8[8], v8[9], v8[10], v8[11], v8[12])
+						currentCamera2.CFrame = arg2.CFrame * CFrame.new(0, 1.2, 0) * cframe
+
+						if v9 then
+							currentCamera2.FieldOfView = v9
+						end
+					end
+				end)
+			end
+
+			local function fn12()
+				if flag then
+					return
+				end
+				local character = localPlayer.Character
+				if not character or not character.Parent then
+					return
+				end
+				local humanoid = character:FindFirstChildOfClass("Humanoid")
+				local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
+				if not humanoid or not humanoidRootPart or humanoid.Health <= 0 then
+					return
+				end
+				local animator = humanoid:FindFirstChildOfClass("Animator")
+
+				if not animator then
+					animator = Instance.new("Animator")
+					animator.Parent = humanoid
+				end
+
+				fn10()
+				flag = true
+				humanoid.Health = humanoid.MaxHealth
+				humanoidRootPart.Anchored = true
+				humanoid.AutoRotate = false
+				local animations = ReplicatedStorage:FindFirstChild("Animations")
+				animations = animations and ReplicatedStorage.Animations:FindFirstChild("Abilities") and ReplicatedStorage.Animations.Abilities:FindFirstChild("LightningGodAwakening")
+
+				if animations then
+					v4 = animator:LoadAnimation(animations)
+					v4.Priority = Enum.AnimationPriority.Action4
+					v4:Play(0.1)
+				end
+
+				pcall(function()
+					local sound = Instance.new("Sound")
+					sound.SoundId = "rbxassetid://103481331692768"
+					sound.Volume = 2
+					sound.RollOffMaxDistance = 300
+					sound.Parent = humanoidRootPart
+					sound:Play()
+					v6 = sound
+				end)
+
+				fn11(humanoidRootPart)
+				local folder = Instance.new("Folder")
+				folder.Name = "LightningGodInterrupt"
+				folder.Parent = character
+				v5 = folder
+				local lightninggodawakeningclienteffec = ReplicatedStorage:FindFirstChild("Modules") and ReplicatedStorage.Modules:FindFirstChild("AbilityEffectsModules") and ReplicatedStorage.Modules.AbilityEffectsModules:FindFirstChild("LIGHTNINGGODAWAKENINGCLIENTEFFECTS")
+				local length = v4 and v4.Length or 4.3
+
+				if lightninggodawakeningclienteffec then
+					local module = require(lightninggodawakeningclienteffec)
+
+					task.spawn(function()
+						module({
+							ModuleName = "LIGHTNINGGODAWAKENING",
+							Character = character,
+							InterruptedFolder = folder,
+							TimeLength = length,
+						})
+					end)
+				end
+
+				task.delay(2.85, function()
+					if not flag or not character or not character.Parent then
+						return
+					end
+
+					pcall(function()
+						local remotes = character:FindFirstChild("Remotes")
+						local relay = remotes and remotes:FindFirstChild("Relay")
+
+						if relay then
+							relay:Fire({
+								EffectName = "MauioShake",
+								Length = 0.45,
+								TweenSpeed = 0.075,
+								AxisMultipliers = Vector3.new(1, 0.15, 1),
+								FadeStyle = "inQuad",
+								PositionStyle = "inCubic",
+								Intensity = 2,
+							})
+						end
+					end)
+
+					pcall(function()
+						local EffectsSecond = require(ReplicatedStorage.Modules.EffectsSecond)
+
+						if EffectsSecond and EffectsSecond.ImpactFrames then
+							EffectsSecond.ImpactFrames({ foldername = "LightningGod", displaytime = 0.015 })
+						end
+					end)
+				end)
+
+				task.delay(length, function()
+					if not flag then
+						return
+					end
+					fn10()
+
+					pcall(function()
+						if humanoidRootPart and humanoidRootPart.Parent then
+							local sound = Instance.new("Sound")
+							sound.SoundId = "rbxassetid://97926606277706"
+							sound.Volume = 1.5
+							sound.RollOffMaxDistance = 300
+							sound.Parent = humanoidRootPart
+							sound:Play()
+							game:GetService("Debris"):AddItem(sound, 10)
+						end
+					end)
+				end)
+			end
+
+			local function fn13()
+				local backpack = localPlayer:FindFirstChild("Backpack")
+				if not backpack then
+					return
+				end
+
+				for _, child in ipairs(backpack:GetChildren()) do
+					if child.Name == "Awakening" or child.Name == "⚡ Lightning God Awakening" or child.Name == "Lightning God Awakening" then
+						child:Destroy()
+					end
+				end
+
+				local character = localPlayer.Character
+
+				if character then
+					for _, child in ipairs(character:GetChildren()) do
+						local isTool = child:IsA("Tool")
+
+						if isTool then
+							isTool = child.Name == "Awakening" or child.Name == "⚡ Lightning God Awakening" or child.Name == "Lightning God Awakening"
+						end
+
+						if isTool then
+							child:Destroy()
+						end
+					end
+				end
+
+				local tool = Instance.new("Tool")
+				tool.Name = "Awakening"
+				tool.RequiresHandle = false
+				tool.CanBeDropped = false
+
+				tool.Equipped:Connect(function()
+					fn12()
+				end)
+
+				tool.Activated:Connect(function()
+					fn12()
+				end)
+
+				tool.Parent = backpack
+
+				task.spawn(function()
+					local playerGui = localPlayer:FindFirstChild("PlayerGui")
+					playerGui = playerGui and playerGui:FindFirstChild("Hotbar")
+
+					if playerGui then
+						for _, descendant in ipairs(playerGui:GetDescendants()) do
+							if descendant:IsA("TextButton") then
+								local toolName = descendant:FindFirstChild("ToolName", true)
+
+								if toolName then
+									toolName = toolName.Text == "Awakening" or toolName.Text:find("Lightning")
+								end
+
+								if toolName then
+									descendant.MouseButton1Click:Connect(function()
+										fn12()
+									end)
+								end
+							end
+						end
+					end
+				end)
+			end
+
+			local connection3 = UserInputService.InputBegan:Connect(function(input, gameProcessed)
+				if gameProcessed then
+					return
+				end
+
+				if input.KeyCode == Enum.KeyCode.G then
+					fn12()
+				end
+			end)
+
+			local connection4 = localPlayer.CharacterAdded:Connect(function()
+				task.wait(0.5)
+				fn10()
+				fn13()
+			end)
+
+			local playerGui = localPlayer:FindFirstChild("PlayerGui")
+
+			if playerGui then
+				for _, v7 in ipairs({
+					"LightningAwakeningGui",
+					"LightningGodGui",
+					"SoundDumpGui",
+					"CodeDumpGui",
+					"DeepSoundDumpGui",
+				}) do
+					local v8 = playerGui:FindFirstChild(v7)
+
+					if v8 then
+						v8:Destroy()
+					end
+				end
+			end
+
+			if localPlayer.Character then
+				fn13()
+			end
+
+			getgenv()._LightningGodCleaner = function()
+				pcall(fn10)
+
+				pcall(function()
+					connection3:Disconnect()
+				end)
+
+				pcall(function()
+					connection4:Disconnect()
+				end)
+
+				pcall(function()
+					local backpack = localPlayer:FindFirstChild("Backpack")
+
+					if backpack then
+						for _, child in ipairs(backpack:GetChildren()) do
+							if child.Name == "Awakening" or child.Name == "⚡ Lightning God Awakening" or child.Name == "Lightning God Awakening" then
+								child:Destroy()
+							end
+						end
+					end
+				end)
+
+				pcall(function()
+					local playerGui2 = localPlayer:FindFirstChild("PlayerGui")
+
+					if playerGui2 then
+						for _, v7 in ipairs({
+							"LightningAwakeningGui",
+							"LightningGodGui",
+							"SoundDumpGui",
+							"CodeDumpGui",
+							"DeepSoundDumpGui",
+						}) do
+							local v8 = playerGui2:FindFirstChild(v7)
+
+							if v8 then
+								v8:Destroy()
+							end
+						end
+					end
+				end)
+			end
+		else
+			local n = 91146555
+
+			pcall(function()
+				if getgenv and getgenv()._LightningGodCleaner then
+					pcall(getgenv()._LightningGodCleaner)
+					getgenv()._LightningGodCleaner = nil
+				end
+			end)
+		end
+	end,
+})
+
+v3:Toggle({
+	Title = "Visual QuickSilver",
+	Default = false,
+	Callback = function(arg)
+		if arg then
+			if getgenv and getgenv()._NativeQuicksilverCleaner then
+				pcall(getgenv()._NativeQuicksilverCleaner)
+			end
+
+			local function fn10(parent)
+				if not parent then
+					return
+				end
+				localPlayer:SetAttribute("_EquippedPower", "QUICKSILVER")
+				local powerOverwrite = parent:FindFirstChild("PowerOverwrite")
+
+				if not powerOverwrite then
+					powerOverwrite = Instance.new("StringValue")
+					powerOverwrite.Name = "PowerOverwrite"
+					powerOverwrite.Parent = parent
+				end
+
+				powerOverwrite.Value = "QUICKSILVER"
+
+				if not parent:FindFirstChild("IsWallyWest") then
+					local folder = Instance.new("Folder")
+					folder.Name = "IsWallyWest"
+					folder.Parent = parent
+				end
+
+				pcall(function()
+					if ReplicatedStorage:FindFirstChild("Animations") and ReplicatedStorage.Animations:FindFirstChild("Quicksilver") then
+						local quicksilver = ReplicatedStorage.Animations.Quicksilver
+
+						if not quicksilver:GetAttribute("PRELOADED") then
+							quicksilver:SetAttribute("PRELOADED", true)
+						end
+					end
+				end)
+			end
+
+			local connection2 = RunService.Heartbeat:Connect(function()
+				local character = localPlayer.Character
+				if not character or not character.Parent then
+					return
+				end
+
+				if not character:FindFirstChild("IsWallyWest") then
+					local folder = Instance.new("Folder")
+					folder.Name = "IsWallyWest"
+					folder.Parent = character
+				end
+
+				if not character:FindFirstChild("PowerOverwrite") then
+					local stringValue = Instance.new("StringValue")
+					stringValue.Name = "PowerOverwrite"
+					stringValue.Value = "QUICKSILVER"
+					stringValue.Parent = character
+				end
+
+				if localPlayer:GetAttribute("_EquippedPower") ~= "QUICKSILVER" then
+					localPlayer:SetAttribute("_EquippedPower", "QUICKSILVER")
+				end
+			end)
+
+			local connection3 = localPlayer.CharacterAdded:Connect(function(character)
+				if not character then
+					return
+				end
+				task.wait(0.3)
+				fn10(character)
+			end)
+
+			if localPlayer.Character then
+				fn10(localPlayer.Character)
+			end
+
+			if getgenv then
+				getgenv()._NativeQuicksilverCleaner = function()
+					pcall(function()
+						connection2:Disconnect()
+					end)
+
+					pcall(function()
+						connection3:Disconnect()
+					end)
+
+					if localPlayer.Character then
+						local isWallyWest = localPlayer.Character:FindFirstChild("IsWallyWest")
+
+						if isWallyWest then
+							pcall(function()
+								isWallyWest:Destroy()
+							end)
+						end
+
+						local powerOverwrite = localPlayer.Character:FindFirstChild("PowerOverwrite")
+
+						if powerOverwrite then
+							pcall(function()
+								powerOverwrite:Destroy()
+							end)
+						end
+
+						localPlayer.Character:SetAttribute("WallyWestRun", nil)
+					end
+
+					if localPlayer:GetAttribute("_EquippedPower") == "QUICKSILVER" then
+						localPlayer:SetAttribute("_EquippedPower", nil)
+					end
+
+					if getgenv then
+						getgenv()._NativeQuicksilverCleaner = nil
+					end
+				end
+			end
+		elseif getgenv and getgenv()._NativeQuicksilverCleaner then
+			pcall(getgenv()._NativeQuicksilverCleaner)
+		end
+	end,
+})
+
+v3:Toggle({
+	Title = "Visual Reality Jumper",
+	Default = false,
+	Callback = function(arg)
+		if arg then
+			pcall(function()
+				if getgenv and getgenv()._RealityJumperCleaner then
+					pcall(getgenv()._RealityJumperCleaner)
+				end
+			end)
+
+			local flag = false
+			local v4 = nil
+			local v5 = nil
+			local connection2 = nil
+			local connection3 = nil
+			local connection4 = nil
+			local connection5 = nil
+			local tbl7 = {}
+			local tbl8 = {}
+			local tbl9 = {}
+			local cFrame = nil
+			local v6 = nil
+
+			local function fn10(arg2)
+				flag = false
+
+				if connection2 then
+					pcall(function()
+						connection2:Disconnect()
+					end)
+
+					connection2 = nil
+				end
+
+				if connection3 then
+					pcall(function()
+						connection3:Disconnect()
+					end)
+
+					connection3 = nil
+				end
+
+				local v7
+
+				if arg2 then
+					for _, v8 in ipairs(tbl7) do
+						pcall(function()
+							v8:Stop()
+							v8:Destroy()
+						end)
+					end
+
+					tbl7 = {}
+				end
+
+				for _, v8 in ipairs(tbl8) do
+					pcall(function()
+						if v8 and v8.Parent then
+							v8:Destroy()
+						end
+					end)
+				end
+
+				tbl8 = {}
+
+				for _, v8 in ipairs(tbl9) do
+					pcall(function()
+						v8:Stop(0.2)
+					end)
+				end
+
+				tbl9 = {}
+				local currentCamera = workspace.CurrentCamera
+
+				if currentCamera then
+					currentCamera.CameraType = Enum.CameraType.Custom
+					currentCamera.FieldOfView = 70
+				end
+
+				if v4 then
+					v7 = pcall
+
+					v7(function()
+						v4:Stop(0.3)
+					end)
+
+					v4 = nil
+				end
+
+				if v5 then
+					local v8 = pcall
+
+					v8(function()
+						v5:Destroy()
+					end)
+
+					v5 = nil
+				end
+
+				v6 = nil
+				local character = localPlayer.Character
+
+				if character then
+					local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
+
+					if humanoidRootPart then
+						if cFrame then
+							humanoidRootPart.CFrame = cFrame
+						end
+
+						humanoidRootPart.Anchored = false
+					end
+
+					local humanoid = character:FindFirstChildOfClass("Humanoid")
+
+					if humanoid then
+						humanoid.AutoRotate = true
+					end
+				end
+
+				cFrame = nil
+			end
+
+			local function fn11(soundId, volume, arg2, playbackSpeed)
+				task.delay(arg2, function()
+					if not flag then
+						return
+					end
+					local character = localPlayer.Character
+					local humanoidRootPart = character and (character:FindFirstChild("HumanoidRootPart") or character:FindFirstChild("Torso"))
+					if not humanoidRootPart or not humanoidRootPart.Parent then
+						return
+					end
+
+					pcall(function()
+						local sound = Instance.new("Sound")
+						sound.SoundId = soundId
+						sound.Volume = volume or 2
+						sound.PlaybackSpeed = playbackSpeed or 1
+						sound.RollOffMaxDistance = 500
+						sound.Parent = humanoidRootPart
+						sound:Play()
+						table.insert(tbl7, sound)
+						game:GetService("Debris"):AddItem(sound, 15)
+					end)
+				end)
+			end
+
+			local function fn12()
+				for _, v7 in ipairs(tbl7) do
+					pcall(function()
+						v7:Stop()
+						v7:Destroy()
+					end)
+				end
+
+				tbl7 = {}
+				fn11("rbxassetid://135807939785117", 2, 0, 1)
+			end
+
+			local function fn13(arg2)
+				local realityJump = ReplicatedStorage:FindFirstChild("CustomCameraModules") and ReplicatedStorage.CustomCameraModules:FindFirstChild("RealityJump")
+				if not realityJump then
+					return
+				end
+				local v7 = nil
+
+				pcall(function()
+					v7 = require(realityJump)()
+				end)
+
+				if not v7 or not v7.Frames or not v7.FOV then
+					return
+				end
+				local frames = v7.Frames
+				local fov = v7.FOV
+				local n = #frames
+				local currentCamera = workspace.CurrentCamera
+				if not currentCamera then
+					return
+				end
+				currentCamera.CameraType = Enum.CameraType.Scriptable
+				local n2 = 1
+
+				if connection2 then
+					connection2:Disconnect()
+					connection2 = nil
+				end
+
+				connection2 = RunService.RenderStepped:Connect(function(deltaTime)
+					local currentCamera2 = workspace.CurrentCamera
+					local character = localPlayer.Character
+
+					if not flag or not character or not character.Parent or not currentCamera2 then
+						if connection2 then
+							connection2:Disconnect()
+							connection2 = nil
+						end
+
+						if currentCamera2 then
+							currentCamera2.CameraType = Enum.CameraType.Custom
+							currentCamera2.FieldOfView = 70
+						end
+
+						return
+					end
+
+					n2 += deltaTime * 60
+					local n3 = math.floor(n2)
+
+					if v6 and v6.Parent and cFrame then
+						pcall(function()
+							local cframe = CFrame.Angles(0, math.rad(n2 * 0.4), 0)
+
+							if v6:IsA("BasePart") then
+								v6.CFrame = CFrame.new(cFrame.Position) * cframe
+							elseif v6:IsA("Model") then
+								v6:PivotTo(CFrame.new(cFrame.Position) * cframe)
+							end
+						end)
+					end
+
+					if n < n3 then
+						if connection2 then
+							connection2:Disconnect()
+							connection2 = nil
+						end
+
+						currentCamera2.CameraType = Enum.CameraType.Custom
+						TweenService:Create(currentCamera2, TweenInfo.new(0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { FieldOfView = 70 }):Play()
+						return
+					end
+
+					local v8 = frames[n3]
+					local v9 = fov[n3]
+
+					if v8 then
+						currentCamera2.CFrame = arg2 * CFrame.new(v8[1], v8[2], v8[3], v8[4], v8[5], v8[6], v8[7], v8[8], v8[9], v8[10], v8[11], v8[12])
+
+						if v9 then
+							currentCamera2.FieldOfView = v9
+						end
+					end
+				end)
+			end
+
+			local function fn14()
+				if flag then
+					return
+				end
+				local character = localPlayer.Character
+				if not character or not character.Parent then
+					return
+				end
+				local humanoid = character:FindFirstChildOfClass("Humanoid")
+				local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
+				if not humanoid or not humanoidRootPart or humanoid.Health <= 0 then
+					return
+				end
+				local animator = humanoid:FindFirstChildOfClass("Animator")
+
+				if not animator then
+					animator = Instance.new("Animator")
+					animator.Parent = humanoid
+				end
+
+				fn10(true)
+				flag = true
+				cFrame = humanoidRootPart.CFrame
+				humanoidRootPart.Anchored = true
+				humanoid.AutoRotate = false
+
+				if connection3 then
+					connection3:Disconnect()
+					connection3 = nil
+				end
+
+				connection3 = RunService.Heartbeat:Connect(function()
+					if flag and humanoidRootPart and humanoidRootPart.Parent and cFrame then
+						humanoidRootPart.CFrame = cFrame
+						humanoidRootPart.Anchored = true
+					end
+				end)
+
+				local animations = ReplicatedStorage:FindFirstChild("Animations")
+
+				if animations then
+					animations = ReplicatedStorage.Animations:FindFirstChild("Abilities")
+				end
+
+				local user = animations and ReplicatedStorage.Animations.Abilities:FindFirstChild("RealityJumper") and ReplicatedStorage.Animations.Abilities.RealityJumper:FindFirstChild("User")
+				local n = 7.5
+
+				if user then
+					v4 = animator:LoadAnimation(user)
+					v4.Priority = Enum.AnimationPriority.Action4
+					v4:Play(0.1)
+
+					if v4.Length and v4.Length > 0 then
+						n = math.max(v4.Length, 7.5)
+					end
+				end
+
+				fn12()
+				local folder = Instance.new("Folder")
+				folder.Name = "RealityJumpInterrupt"
+				folder.Parent = character
+				v5 = folder
+				local realityJump = ReplicatedStorage:FindFirstChild("Modules") and ReplicatedStorage.Modules:FindFirstChild("AbilityEffectsModules") and (ReplicatedStorage.Modules.AbilityEffectsModules:FindFirstChild("RealityJump") or ReplicatedStorage.Modules.AbilityEffectsModules:FindFirstChild("RealityJumper"))
+
+				if realityJump then
+					local module = require(realityJump)
+
+					task.spawn(function()
+						pcall(function()
+							module({
+								ModuleName = "RealityJump",
+								Character = character,
+								InterruptedFolder = folder,
+								TimeLength = n,
+								realplayer = localPlayer,
+							})
+						end)
+					end)
+				end
+
+				fn13(cFrame)
+
+				task.delay(n, function()
+					if not flag then
+						return
+					end
+					fn10(false)
+				end)
+			end
+
+			local function fn15()
+				local backpack = localPlayer:FindFirstChild("Backpack")
+				if not backpack then
+					return
+				end
+
+				for _, child in ipairs(backpack:GetChildren()) do
+					if child.Name == "Reality Jumper" or child.Name == "Reality Jump" or child.Name == "🌌 Reality Jumper" or child.Name == "🌌 Reality Jump" then
+						child:Destroy()
+					end
+				end
+
+				local character = localPlayer.Character
+
+				if character then
+					for _, child in ipairs(character:GetChildren()) do
+						if child:IsA("Tool") and (child.Name == "Reality Jumper" or child.Name == "Reality Jump" or child.Name == "🌌 Reality Jumper" or child.Name == "🌌 Reality Jump") then
+							child:Destroy()
+						end
+					end
+
+					local powerOverwrite = character:FindFirstChild("PowerOverwrite")
+
+					if not powerOverwrite then
+						local stringValue = Instance.new("StringValue")
+						stringValue.Name = "PowerOverwrite"
+						stringValue.Parent = character
+						powerOverwrite = stringValue
+					end
+
+					powerOverwrite.Value = "REALITY JUMPER"
+				end
+
+				localPlayer:SetAttribute("_EquippedPower", "REALITY JUMPER")
+				local tool = Instance.new("Tool")
+				tool.Name = "Reality Jumper"
+				tool.RequiresHandle = false
+				tool.CanBeDropped = false
+				tool:SetAttribute("PowerTool", "REALITY JUMPER")
+				tool:SetAttribute("Require", "RealityJump")
+
+				connection4 = tool.Equipped:Connect(function()
+					fn14()
+				end)
+
+				connection5 = tool.Activated:Connect(function()
+					fn14()
+				end)
+
+				tool.Parent = backpack
+
+				task.spawn(function()
+					local playerGui = localPlayer:FindFirstChild("PlayerGui")
+					playerGui = playerGui and playerGui:FindFirstChild("Hotbar")
+
+					if playerGui then
+						for _, descendant in ipairs(playerGui:GetDescendants()) do
+							if descendant:IsA("TextButton") then
+								local toolName = descendant:FindFirstChild("ToolName", true)
+
+								if toolName then
+									toolName = toolName.Text == "Reality Jumper" or toolName.Text == "Reality Jump" or toolName.Text:find("Reality")
+								end
+
+								if toolName then
+									descendant.MouseButton1Click:Connect(function()
+										fn14()
+									end)
+								end
+							end
+						end
+					end
+				end)
+			end
+
+			local connection6 = UserInputService.InputBegan:Connect(function(input, gameProcessed)
+				if gameProcessed then
+					return
+				end
+
+				if input.KeyCode == Enum.KeyCode.G or input.KeyCode == Enum.KeyCode.V then
+					fn14()
+				end
+			end)
+
+			local connection7 = localPlayer.CharacterAdded:Connect(function()
+				task.wait(0.5)
+				fn10(true)
+				fn15()
+			end)
+
+			local connection8 = RunService.Heartbeat:Connect(function()
+				local character = localPlayer.Character
+				if not character or not character.Parent then
+					return
+				end
+
+				if not character:FindFirstChild("PowerOverwrite") then
+					local stringValue = Instance.new("StringValue")
+					stringValue.Name = "PowerOverwrite"
+					stringValue.Value = "REALITY JUMPER"
+					stringValue.Parent = character
+				end
+
+				if localPlayer:GetAttribute("_EquippedPower") ~= "REALITY JUMPER" then
+					localPlayer:SetAttribute("_EquippedPower", "REALITY JUMPER")
+				end
+			end)
+
+			if localPlayer.Character then
+				fn15()
+			end
+
+			getgenv()._RealityJumperCleaner = function()
+				pcall(function()
+					fn10(true)
+				end)
+
+				pcall(function()
+					if connection2 then
+						connection2:Disconnect()
+					end
+				end)
+
+				pcall(function()
+					if connection3 then
+						connection3:Disconnect()
+					end
+				end)
+
+				pcall(function()
+					if connection6 then
+						connection6:Disconnect()
+					end
+				end)
+
+				pcall(function()
+					if connection7 then
+						connection7:Disconnect()
+					end
+				end)
+
+				pcall(function()
+					if connection8 then
+						connection8:Disconnect()
+					end
+				end)
+
+				pcall(function()
+					if connection4 then
+						connection4:Disconnect()
+					end
+				end)
+
+				pcall(function()
+					if connection5 then
+						connection5:Disconnect()
+					end
+				end)
+
+				pcall(function()
+					local backpack = localPlayer:FindFirstChild("Backpack")
+
+					if backpack then
+						for _, child in ipairs(backpack:GetChildren()) do
+							if child.Name == "Reality Jumper" or child.Name == "Reality Jump" or child.Name == "🌌 Reality Jumper" or child.Name == "🌌 Reality Jump" then
+								child:Destroy()
+							end
+						end
+					end
+				end)
+
+				pcall(function()
+					local character = localPlayer.Character
+
+					if character then
+						local powerOverwrite = character:FindFirstChild("PowerOverwrite")
+
+						if powerOverwrite then
+							powerOverwrite:Destroy()
+						end
+
+						for _, child in ipairs(character:GetChildren()) do
+							local isTool = child:IsA("Tool")
+							local flag2
+
+							if isTool then
+								flag2 = child.Name == "Reality Jumper" or child.Name == "Reality Jump" or child.Name == "🌌 Reality Jumper" or child.Name == "🌌 Reality Jump"
+							else
+								flag2 = isTool
+							end
+
+							if flag2 then
+								child:Destroy()
+							end
+						end
+					end
+
+					if localPlayer:GetAttribute("_EquippedPower") == "REALITY JUMPER" then
+						localPlayer:SetAttribute("_EquippedPower", nil)
+					end
+				end)
+
+				if getgenv then
+					getgenv()._RealityJumperCleaner = nil
+				end
+			end
+		else
+			pcall(function()
+				if getgenv and getgenv()._RealityJumperCleaner then
+					pcall(getgenv()._RealityJumperCleaner)
+					getgenv()._RealityJumperCleaner = nil
+					return
+				end
+			end)
+		end
+	end,
+})
+
+do
+	local v4 = v:Tab({ Title = "Settings", Icon = "sliders" })
+
+	local function fn10(arg, arg2)
+		local flag = not arg
+
+		if not flag then
+			flag = type(arg) ~= "table"
+		end
+
+		if flag then
+			return false
+		end
+
+		for _, v5 in ipairs({ "Set", "SetValue", "SetState", "Select", "SetKey" }) do
+			if typeof(arg[v5]) == "function" then
+				if pcall(function()
+					arg[v5](arg, arg2)
+				end) then
+					return true
+				end
+			end
+		end
+
+		return false
+	end
+
+	local function fn11()
+		pcall(function()
+			local HttpService = game:GetService("HttpService")
+			local tbl7 = {}
+
+			for k, v5 in pairs(tbl) do
+				local flag = type(v5) == "boolean"
+
+				if not flag then
+					flag = type(v5) == "number"
+				end
+
+				local flag2
+
+				if flag then
+					flag2 = flag
+				else
+					flag2 = type(v5) == "string"
+				end
+
+				if flag2 then
+					tbl7[k] = v5
+				end
+			end
+
+			if lib and lib.GetCurrentTheme then
+				pcall(function()
+					tbl7.__CurrentTheme = lib:GetCurrentTheme()
+				end)
+			end
+
+			if tbl.DefaultTheme then
+				tbl7.__DefaultTheme = tbl.DefaultTheme
+			end
+
+			if isfolder and not isfolder("UwuHub") then
+				pcall(makefolder, "UwuHub")
+			end
+
+			if writefile then
+				writefile("UwuHub/config.json", HttpService:JSONEncode(tbl7))
+				fn5("Config", "Configuration saved successfully!")
+			else
+				fn5("Config", "Your executor does not support writefile!")
+			end
+		end)
+	end
+
+	local function fn12()
+		pcall(function()
+			local HttpService = game:GetService("HttpService")
+
+			if isfile and isfile("UwuHub/config.json") and readfile then
+				local json = readfile("UwuHub/config.json")
+				local data = HttpService:JSONDecode(json)
+				local flag
+
+				if data then
+					flag = type(data) == "table"
+				else
+					flag = data
+				end
+
+				if flag then
+					for k, v5 in pairs(data) do
+						if k ~= "__CurrentTheme" and k ~= "__DefaultTheme" then
+							tbl[k] = v5
+							local flag2 = false
+
+							if tbl6[k] then
+								flag2 = fn10(tbl6[k], v5)
+							end
+
+							if not flag2 and handlers[k] then
+								local n = 102266636
+
+								pcall(function()
+									handlers[k](v5)
+								end)
+							end
+						end
+					end
+
+					local defaultTheme = data.__DefaultTheme or data.__CurrentTheme
+
+					if defaultTheme and lib and lib.SetTheme then
+						pcall(function()
+							if lib.Themes and lib.Themes[defaultTheme] then
+								lib:SetTheme(defaultTheme)
+							end
+						end)
+					end
+
+					fn5("Config", "Configuration loaded successfully!")
+				end
+			else
+				fn5("Config", "No saved config found!")
+			end
+		end)
+	end
+
+	v4:Button({
+		Title = "Save Config",
+		Callback = function()
+			fn11()
+		end,
+	})
+
+	v4:Button({
+		Title = "Load Config",
+		Callback = function()
+			fn12()
+		end,
+	})
+
+	local flag = false
+
+	pcall(function()
+		if isfile and isfile("UwuHub/autoload.txt") and readfile then
+			flag = readfile("UwuHub/autoload.txt") == "true"
+		end
+	end)
+
+	v4:Toggle({
+		Title = "Set Auto Load",
+		Default = flag,
+		Callback = function(arg)
+			pcall(function()
+				if isfolder and not isfolder("UwuHub") then
+					pcall(makefolder, "UwuHub")
+				end
+
+				if writefile then
+					writefile("UwuHub/autoload.txt", arg and "true" or "false")
+				end
+
+				fn5("Config", "Auto load set to " .. tostring(arg))
+			end)
+		end,
+	})
+
+	v4:Dropdown({
+		Title = "Select Theme",
+		Values = {
+			"White-Black",
+			"Dark",
+			"Cyberpunk",
+			"Dracula",
+			"Tokyo Night",
+			"Vaporwave",
+			"Onyx Gold",
+			"Blood Moon",
+			"Rose",
+			"Plant",
+			"Red",
+			"Indigo",
+			"Sky",
+			"Violet",
+			"Amber",
+			"Emerald",
+			"Midnight",
+			"Crimson",
+			"Light",
+		},
+		Default = "White-Black",
+		Callback = function(currentThemeName)
+			local flag2 = not currentThemeName
+
+			if not flag2 then
+				flag2 = type(currentThemeName) ~= "string"
+			end
+
+			if flag2 then
+				return
+			end
+			tbl.CurrentThemeName = currentThemeName
+
+			pcall(function()
+				if lib and lib.Themes and lib.Themes[currentThemeName] then
+					lib:SetTheme(currentThemeName)
+				end
+			end)
+		end,
+	})
+
+	v4:Button({
+		Title = "Set Current Theme as Default",
+		Callback = function()
+			pcall(function()
+				local currentTheme = lib and lib.GetCurrentTheme and lib:GetCurrentTheme() or "White-Black"
+				tbl.DefaultTheme = currentTheme
+
+				if isfolder and not isfolder("UwuHub") then
+					pcall(makefolder, "UwuHub")
+				end
+
+				if writefile then
+					writefile("UwuHub/default_theme.txt", currentTheme)
+				end
+
+				fn5("Theme", "Default theme set to: " .. tostring(currentTheme))
+			end)
+		end,
+	})
+
+	local v5 = pcall
+
+	local function fn13()
+		if isfile and isfile("UwuHub/default_theme.txt") and readfile then
+			local txt = readfile("UwuHub/default_theme.txt")
+
+			if txt and txt ~= "" and lib and lib.SetTheme then
+				if lib.Themes and lib.Themes[txt] then
+					lib:SetTheme(txt)
+				end
+			end
+		end
+	end
+
+	v5(fn13)
+
+	pcall(function()
+		if isfile and isfile("UwuHub/autoload.txt") and readfile then
+			if readfile("UwuHub/autoload.txt") == "true" then
+				fn12()
+			end
+		end
+	end)
+end
+
+pcall(function()
+	fn5("UwU Hub", "Welcome To UwU Hub V2 " .. tostring(localPlayer and (localPlayer.DisplayName or localPlayer.Name) or "Player"), true)
+end)
